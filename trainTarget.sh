@@ -7,7 +7,7 @@
 #SBATCH --mem=16G
 #SBATCH --mail-type=END,FAIL
 #SBATCH -o output.txt
-#SBATCH --exclude=gnode[001-050]
+#SBATCH --exclude=gnode[001-054]
 #SBATCH --job-name=train_target_10000000_steps
 
 python TrainTarget.py

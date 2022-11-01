@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -102,7 +103,7 @@ class TD3:
         self.target_actor.load_state_dict(self.actor.state_dict())
 
         self.critic = Critic(self.state_shape, self.action_shape).to(device)
-        self.target_critic = Critic(self.state_shape, self.action_shape)
+        self.target_critic = Critic(self.state_shape, self.action_shape).to(device)
         self.target_critic.load_state_dict(self.critic.state_dict())
 
         self.replay_buffer = ReplayBuffer(memory_size)
@@ -135,7 +136,7 @@ class TD3:
             curr_ep_critic_losses = []
             curr_ep_actor_losses = []
             step = 0
-            state = self.tensorify(self.env.reset())
+            state = self.tensorify(self.env.reset()).float()
             while True:
 
                 if len(self.replay_buffer) < self.min_experiences:
@@ -143,14 +144,14 @@ class TD3:
                 else:
                     noise = self.tensorify(np.random.normal(0, self.max_action * 0.1, size=self.action_shape))
                     action = self.tensorify(self.select_action(state))
-                    action = (action + noise).clamp(-self.max_action, self.max_action)
+                    action = (action + noise).clamp(-self.max_action, self.max_action).to(device)
 
                 next_state, reward, done, info = self.env.step(action.squeeze(0).cpu().numpy())
 
                 curr_ep_rew += reward
 
-                next_state = self.tensorify(next_state)
-                reward = self.tensorify([reward])
+                next_state = self.tensorify(next_state).float()
+                reward = self.tensorify([reward]).float()
                 done = self.tensorify([done])
 
                 self.replay_buffer.push(Experience(state, action, next_state, reward, done))
@@ -173,7 +174,7 @@ class TD3:
             actor_losses.append(sum(curr_ep_actor_losses)/len(curr_ep_actor_losses) if len(curr_ep_actor_losses) > 0 else np.nan)
 
             if verbose:
-                if ep and ep % 10 == 0:
+                if ep and ep % 2 == 0:
                     mean_rew = sum(rewards[-10:])/10
                     
                     numeric_critic_losses = [c for c in critic_losses if c is not None]
@@ -197,8 +198,8 @@ class TD3:
 
         with torch.no_grad():
 
-            noise = (torch.randn_like(batch_actions) * self.policy_noise).clamp(-self.noise_clip, self.noise_clip)
-            batch_next_actions = (self.target_actor(batch_next_states) + noise).clamp(-self.max_action, self.max_action)
+            noise = (torch.randn_like(batch_actions) * self.policy_noise).clamp(-self.noise_clip, self.noise_clip).to(device)
+            batch_next_actions = (self.target_actor(batch_next_states) + noise).clamp(-self.max_action, self.max_action).to(device)
 
             target_Q1, target_Q2 = self.target_critic(batch_next_states, batch_next_actions)
             target_Q = torch.min(target_Q1, target_Q2)
@@ -238,3 +239,21 @@ class TD3:
 
     def save_policy(self, path):
         torch.save(self.actor.state_dict(), path)
+
+    def save(self, path):
+        
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        torch.save(self.actor.state_dict(), f"{path}/actor.pt")
+        torch.save(self.target_actor.state_dict(), f"{path}/target_actor.pt")
+        torch.save(self.critic.state_dict(), f"{path}/critic.pt")
+        torch.save(self.target_critic.state_dict(), f"{path}/target_critic.pt")
+
+    
+    def load(self, path):
+
+        self.actor.load_state_dict(torch.load(f"{path}/actor.pt"))
+        self.target_actor.load_state_dict(torch.load(f"{path}/target_actor.pt"))
+        self.critic.load_state_dict(torch.load(f"{path}/critic.pt"))
+        self.target_critic.load_state_dict(torch.load(f"{path}/target_critic.pt"))

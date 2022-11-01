@@ -1,3 +1,6 @@
+import sys
+sys.path.append("..")
+
 import numpy as np
 from stable_baselines3 import TD3
 from stable_baselines3.common.noise import OrnsteinUhlenbeckActionNoise
@@ -19,11 +22,11 @@ action_noise = OrnsteinUhlenbeckActionNoise(mean=np.zeros(n_actions), sigma=0.05
 checkpoint_callback = CheckpointCallback(
   save_freq=100000,
   save_path="./logs/",
-  name_prefix="td3_target",
+  name_prefix="sb_td3_target",
 )
 
 agent = TD3('MlpPolicy', env=env, verbose=1, action_noise=action_noise, learning_starts=10000)
 
 agent.learn(5000000, callback=checkpoint_callback)
 
-agent.save('models/td3_target')
+agent.save('models/sb_td3_target')
