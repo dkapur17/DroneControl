@@ -4,7 +4,7 @@ sys.path.append("..")
 import matplotlib.pyplot as plt
 import numpy as np
 from TD3 import TD3
-from envs.TargetAviary import TargetAviary
+from envs.legacy.TargetAviary import TargetAviary
 from envs.utils import PositionConstraint
 
 sim_freq = 240

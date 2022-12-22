@@ -10,7 +10,7 @@ class PositionConstraint:
         self.zmin = zmin
         self.zmax = zmax
 
-    def generateRandomPosition(self, padding=0):
+    def generateRandomPosition(self, padding:float=0):
         x = np.random.uniform(self.xmin + padding, self.xmax - padding)
         y = np.random.uniform(self.ymin + padding, self.ymax - padding)
         z = np.random.uniform(self.zmin + padding, self.zmax - padding)
@@ -71,3 +71,6 @@ class PositionConstraint:
 
     def inZBounds(self, zVal):
         return self.zmin <= zVal <= self.zmax
+
+    def inBounds(self, pos):
+        return self.inXBounds(pos[0]) and self.inYBounds(pos[1]) and self.inZBounds(pos[2])

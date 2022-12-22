@@ -3,7 +3,7 @@ sys.path.append("..")
 sys.stdout = sys.stderr # For printing synchronously on HPC
 
 import numpy as np
-from envs.TargetAviary import TargetAviary
+from envs.legacy.TargetAviary import TargetAviary
 from envs.utils import PositionConstraint
 from TD3 import TD3
 

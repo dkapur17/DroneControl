@@ -5,9 +5,7 @@
 #SBATCH --time=4-00:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --mem=16G
-#SBATCH --mail-type=END,FAIL
 #SBATCH -o output.txt
-#SBATCH --exclude=gnode[001-054]
-#SBATCH --job-name=train_target_10000000_steps
+#SBATCH --job-name=train_obstacles_10000000_steps
 
 python TrainObstacles.py
