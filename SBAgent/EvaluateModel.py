@@ -4,18 +4,19 @@ sys.path.append("..")
 from envs.ObstacleAviary import ObstacleAviary
 from envs.utils import ConfigManager
 from stable_baselines3 import PPO
+from tqdm import tqdm
 
 version = 'v1'
 
-config = ConfigManager.loadConfig(f'configs/{version}.json')
+config = ConfigManager.loadConfig(f'../configs/{version}.json', training=True)
 env = ObstacleAviary(**config)
-agent = PPO.load(f'models/ppo_{version}')
+agent = PPO.load(f'models/backup/ppo_{version}')
 
 totalTrials = 10
 successfulTrials = 0
 rewards = []
 durations = []
-for i in range(totalTrials):
+for i in tqdm(range(totalTrials)):
 
     done = False
     episodeReward = 0

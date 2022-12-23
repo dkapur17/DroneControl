@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 version = 'v1'
 
-config = ConfigManager.loadConfig(f'configs/{version}.json')
+config = ConfigManager.loadConfig(f'../configs/{version}.json')
 
 env = ObstacleAviary(**config)
 

@@ -9,7 +9,7 @@ import numpy as np
 from envs.ObstacleAviary import ObstacleAviary
 from envs.utils import ConfigManager
 
-config = ConfigManager.loadConfig('configs/v1.json', training=False)
+config = ConfigManager.loadConfig('../configs/v1.json', training=False)
 
 env = ObstacleAviary(**config)
 

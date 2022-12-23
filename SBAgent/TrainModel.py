@@ -8,7 +8,7 @@ from envs.utils import ConfigManager
 
 version = 'v1'
 
-config = ConfigManager.loadConfig(f'configs/{version}.json', training=True)
+config = ConfigManager.loadConfig(f'../configs/{version}.json', training=True)
 
 env = ObstacleAviary(**config)
 
