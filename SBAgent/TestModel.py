@@ -1,23 +1,19 @@
 import sys
 sys.path.append("..")
+
 from envs.ObstacleAviary import ObstacleAviary
-from envs.utils import PositionConstraint
-from stable_baselines3 import TD3
+from envs.utils import ConfigManager
+from stable_baselines3 import PPO
 import numpy as np
 import matplotlib.pyplot as plt
 
+version = 'v1'
 
-sim_freq = 240
-control_freq = 48
-aggregate_phy_step = int(sim_freq / control_freq)
+config = ConfigManager.loadConfig(f'configs/{version}.json')
 
+env = ObstacleAviary(**config)
 
-geoFence = PositionConstraint(0, 2, -0.5, 0.5, 0, 1)
-
-env = ObstacleAviary(geoFence=geoFence, episodeLength=-1, fixedAltitude=True, assistLearning=False, gui=True, minObstacles=0,
-                     maxObstacles=1, showGeoFence=True, showTrajectory=True, freq=sim_freq, aggregatePhyStep=aggregate_phy_step)
-
-agent = TD3.load(f'models/v4/td3_03ofa', env=env)
+agent = PPO.load(f'models/ppo_{version}')
 
 done = False
 rewards = []

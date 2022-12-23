@@ -6,18 +6,12 @@ sys.path.append("..")
 
 import numpy as np
 
-from envs.TunnelAviary import ObstacleAviary
-from envs.utils import PositionConstraint
+from envs.ObstacleAviary import ObstacleAviary
+from envs.utils import ConfigManager
 
-nObstacles = 0
+config = ConfigManager.loadConfig('configs/v1.json', training=False)
 
-sim_freq = 240
-control_freq = 48
-aggregate_phy_step = int(sim_freq/control_freq)
-
-geoFence = PositionConstraint(-2, 2, -2, 2, 0.5, 2.5)
-
-env = ObstacleAviary(geoFence=geoFence, gui=True, nObstacles=nObstacles, episodeLength=1000, freq=sim_freq, aggregate_phy_steps=aggregate_phy_step)
+env = ObstacleAviary(**config)
 
 agent = ControllerAgent()
 

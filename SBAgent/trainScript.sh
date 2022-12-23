@@ -6,6 +6,6 @@
 #SBATCH --gres=gpu:1
 #SBATCH --mem=16G
 #SBATCH -o output.txt
-#SBATCH --job-name=train_obstacles_10000000_steps
+#SBATCH --job-name=train_obstacles
 
-python TrainObstacles.py
+python TrainModel.py

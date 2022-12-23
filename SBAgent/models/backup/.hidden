@@ -1,0 +1,1 @@
+File to make git include the backup directory even when there are no backup models in it.

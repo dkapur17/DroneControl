@@ -1,4 +1,8 @@
+import json
+from argparse import Namespace
 import numpy as np
+
+
 
 class PositionConstraint:
 
@@ -74,3 +78,25 @@ class PositionConstraint:
 
     def inBounds(self, pos):
         return self.inXBounds(pos[0]) and self.inYBounds(pos[1]) and self.inZBounds(pos[2])
+
+class ConfigManager:
+
+    @staticmethod
+    def loadConfig(configPath, training=False):
+        with open(configPath, 'r') as f:
+            configData = json.load(f)
+
+        configData = Namespace(**configData)
+        geoFence = PositionConstraint(configData.xmin, configData.xmax, configData.ymin, configData.ymax, configData.zmin, configData.zmax)
+        configData.geoFence = geoFence
+
+        del configData.xmin
+        del configData.xmax
+        del configData.ymin
+        del configData.ymax
+        del configData.zmin
+        del configData.zmax
+
+        configData.gui = not training
+
+        return vars(configData)

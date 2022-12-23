@@ -4,15 +4,11 @@ sys.path.append("..")
 import matplotlib.pyplot as plt
 import numpy as np
 from envs.ObstacleAviary import ObstacleAviary
-from envs.utils import PositionConstraint
+from envs.utils import ConfigManager
 
-sim_freq = 240
-control_freq = 48
-aggregate_phy_step = int(sim_freq/control_freq)
+config = ConfigManager.loadConfig('configs/v1.json')
 
-geoFence = PositionConstraint(0, 2, -0.5, 0.5, 0, 1)
-
-env = ObstacleAviary(geoFence=geoFence, fixedAltitude=True, lenientUntil=500, minObstacles=3, maxObstacles=5, gui=True, showGeoFence=True, showTrajectory=True, freq=sim_freq, aggregatePhyStep=aggregate_phy_step)
+env = ObstacleAviary(**config)
 
 for _ in range(3):
     done = False

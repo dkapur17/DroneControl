@@ -273,6 +273,20 @@ class ObstacleAviary(BaseSingleAgentAviary):
         return False
 
     def _computeInfo(self):
+        state = self._getDroneStateVector(0)
+        pos = state[:3]
+
+        if self.episodeLength != -1 and self.episodeStepCount >= self.episodeLength:
+            return {'success': False}
+
+        if np.linalg.norm(self.targetPos - pos) < 0.1:
+            return {'success': True}
+
+        offsetToClosestObstacle = self._computeOffsetToClosestObstacle()
+
+        if np.linalg.norm(offsetToClosestObstacle) <= ObstacleAviary.COLLISION_BOUND_RADIUS:
+            return {'success': False}
+
         return {}
 
     
