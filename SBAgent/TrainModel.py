@@ -6,7 +6,7 @@ from stable_baselines3.common.callbacks import CheckpointCallback
 from envs.ObstacleAviary import ObstacleAviary
 from envs.utils import ConfigManager
 
-version = 'v1'
+version = 'v2'
 
 config = ConfigManager.loadConfig(f'../configs/{version}.json', training=True)
 

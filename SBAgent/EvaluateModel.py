@@ -6,11 +6,11 @@ from envs.utils import ConfigManager
 from stable_baselines3 import PPO
 from tqdm import tqdm
 
-version = 'v1'
+version = 'v2'
 
-config = ConfigManager.loadConfig(f'../configs/{version}.json', training=True)
+config = ConfigManager.loadConfig(f'../configs/{version}.json')
 env = ObstacleAviary(**config)
-agent = PPO.load(f'models/backup/ppo_{version}')
+agent = PPO.load(f'models/ppo_{version}')
 
 totalTrials = 10
 successfulTrials = 0

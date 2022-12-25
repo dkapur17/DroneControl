@@ -5,7 +5,7 @@
 #SBATCH --time=4-00:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --mem=16G
-#SBATCH -o output.txt
-#SBATCH --job-name=train_obstacles
+#SBATCH -o output_v2.txt
+#SBATCH --job-name=train_v2
 
 python TrainModel.py

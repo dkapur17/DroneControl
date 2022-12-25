@@ -333,6 +333,9 @@ class ObstacleAviary(BaseSingleAgentAviary):
 
             # Sample Y-axis position from normal distribution for more obstacles towards the middle of the path
             obstaclePos[1] = np.random.random() * (self.geoFence.ymax - self.geoFence.ymin - 0.4) + (self.geoFence.ymin + 0.2)
+            
+            # Sample Z-axis position from normal distribution for more obstacles towards the initial altitude of the drone
+            obstaclePos[2] = np.random.random() * (self.geoFence.zmax - self.geoFence.zmin - 0.4) + (self.geoFence.zmin + 0.2)
 
             if self.fixedAltitude:
                 obstaclePos[2] = self.altitude + (np.random.random() - 0.5)*0.2
