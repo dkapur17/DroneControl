@@ -1,7 +1,7 @@
 import gym
 import numpy as np
 
-class NoisyObservation(gym.ObservationWrapper):
+class NoisyWrapper1(gym.ObservationWrapper):
     def __init__(self, env, noise_mean=0, noise_stddev=0.01, denoiser=None):
         super().__init__(env)
         self.observation_space = env._observationSpace()
@@ -31,6 +31,7 @@ class NoisyObservation(gym.ObservationWrapper):
         return final_obs
 
 
+# TODO
 class NoiseWrapper2(gym.Wrapper):
     def __init__(self, env, noise_mean=0, noise_stddev=0.01, denoiser=None):
         super().__init__(env)

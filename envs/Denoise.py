@@ -1,6 +1,24 @@
 import numpy as np
 
+      
+class LPFDenoiser:
+    def __init__(self) -> None:
+        cutoff_freq=0.05
+        control_freq=48
+        a=2*np.pi*cutoff_freq
+        self.aT=(1/control_freq)*a 
+    
+    def initiate(self, obs):
+        pass
 
+    def reset(self):
+        pass
+
+    def denoise(self, prev_final_obs, prev_noisy_obs, cur_noisy_obs):
+        yf= (((2-self.aT)/(2+self.aT))*prev_final_obs) + ((self.aT/(2+self.aT))*(cur_noisy_obs + prev_noisy_obs))
+        return yf
+
+# TODO
 class KFDenoiser:
     def __init__(self, state_size, action_size, process_noise, measurement_noise) -> None:
         self.mu = np.zeros(state_size)
@@ -37,21 +55,3 @@ class KFDenoiser:
         return self.mu
 
         
-      
-class LPFDenoiser:
-    def __init__(self) -> None:
-        cutoff_freq=0.05
-        control_freq=48
-        a=2*np.pi*cutoff_freq
-        aT=(1/control_freq)*a 
-    
-    def initiate(self, obs):
-        pass
-
-    def reset(self):
-        pass
-
-    def denoise(self, prev_final_obs, prev_noisy_obs, cur_noisy_obs):
-        yf= (((2-self.aT)/(2+self.aT))*prev_final_obs) + ((self.aT/(2+self.aT))*(cur_noisy_obs + prev_noisy_obs))
-        return yf
-
