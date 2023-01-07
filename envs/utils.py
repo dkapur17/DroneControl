@@ -97,6 +97,8 @@ class ConfigManager:
         del configData.zmin
         del configData.zmax
 
-        configData.gui = not training
+        # configData.gui = not training
+        configData.gui = False
+
 
         return vars(configData)

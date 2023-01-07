@@ -1,9 +1,9 @@
 import numpy as np
 
-      
+
 class LPFDenoiser:
     def __init__(self) -> None:
-        cutoff_freq=0.05
+        cutoff_freq=0.1
         control_freq=48
         a=2*np.pi*cutoff_freq
         self.aT=(1/control_freq)*a 
@@ -20,18 +20,21 @@ class LPFDenoiser:
 
 # TODO
 class KFDenoiser:
-    def __init__(self, state_size, action_size, process_noise, measurement_noise) -> None:
+    def __init__(self, measurement_noise, freq=48, process_noise=0.01, state_size=5, action_size=2) -> None:
         self.mu = np.zeros(state_size)
         self.sigma = np.zeros((state_size, state_size))
 
         # KF matrices
         self.A = np.eye(state_size)
-        self.B = np.array((state_size, action_size))
+        self.B = np.zeros((state_size, action_size))
+        self.B[0][0] = self.B[1][1] = self.B[2][0] = self.B[3][1] = -1 / freq
         self.C = np.eye(state_size)
 
         # Noise covariance matrices
         self.R = np.eye(state_size) * process_noise
         self.Q = np.eye(state_size) * measurement_noise
+
+        self.action_size = action_size
 
 
     def initiate(self, obs):
@@ -40,17 +43,32 @@ class KFDenoiser:
     def reset(self):
         self.mu = np.zeros_like(self.mu)
         self.sigma = np.zeros_like(self.sigma)
+        # self.sigma = self.Q.copy()
+
 
 
     def denoise(self, prev_final_obs, prev_noisy_obs, prev_action, cur_action, cur_noisy_obs):
+        print("Mu: ", self.mu)
+        print("Sigma: ", self.sigma)
+        pa = prev_action[:-1] * prev_action[-1]
+        ca = cur_action[:-1] * cur_action[-1]
+
         # prediction
-        mu_bar = self.A @ self.mu + self.B @ cur_action
+        mu_bar = self.A @ self.mu + self.B @ ca
         sigma_bar = self.A @ self.sigma @ self.A.T + self.R
 
+        print("Mu_bar: ", mu_bar)
+        print("Sigma_bar: ", sigma_bar)
+
+
         # correction
-        K = sigma_bar @ self.C.T @ np.linalg.inv(self.C @ sigma_bar @ self.C.T + self.Q)
-        self.mu = mu_bar + K * (cur_noisy_obs - self.C @ mu_bar)
-        self.sigma = (1 - K * self.C) @ sigma_bar
+        K = sigma_bar @ self.C.T @ np.linalg.pinv(self.C @ sigma_bar @ self.C.T + self.Q)
+        self.mu = mu_bar + K @ (cur_noisy_obs - self.C @ mu_bar)
+        self.sigma = (1 - K @ self.C) @ sigma_bar
+
+        print("K: ",K)
+        print("Mu denoise: ", self.mu)
+        print("Sigma denoise: ", self.sigma)
 
         return self.mu
 

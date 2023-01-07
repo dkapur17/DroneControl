@@ -6,24 +6,42 @@ from envs.utils import ConfigManager
 from stable_baselines3 import PPO
 import numpy as np
 import matplotlib.pyplot as plt
+from envs.NoisyAviary import NoiseWrapper1,NoiseWrapper2
+from envs.Denoise import KFDenoiser, LPFDenoiser
 
-version = 'v1'
+
+# version = 'v5_2d_lpf_0.05_0.1'
+version = 'v5_2d_kf_0.1'
+# version ='v5_2d_noise_0.01'
+
+
 
 config = ConfigManager.loadConfig(f'../configs/{version}.json')
 
-env = ObstacleAviary(**config)
+# denoiser=None
+# denoiser = LPFDenoiser()
+denoiser = KFDenoiser(measurement_noise=0.1)
 
-agent = PPO.load(f'models/ppo_{version}')
+# env = ObstacleAviary(**config)
+# env = NoiseWrapper1(env=ObstacleAviary(**config), noise_mean=0, noise_stddev=0.05, denoiser=denoiser)
+env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=0, noise_stddev=0.1, denoiser=denoiser)
+
+# agent = PPO.load(f'models/ppo_{version}')
+agent = PPO.load(f'logs/ppo_v5_2d_kf_0.1_8000000_steps.zip')
+
+
 
 done = False
 rewards = []
 states = []
 obs = env.reset()
-states.append(np.linalg.norm(obs))
+states.append(np.linalg.norm(obs[:2]))
+
 while not done:
     action, _state = agent.predict(obs, deterministic=True)
     obs, reward, done, info = env.step(action)
-    states.append(np.linalg.norm(obs))
+    print("Outside", obs)
+    states.append(np.linalg.norm(obs[:2]))
     rewards.append(reward)
 env.close()
 

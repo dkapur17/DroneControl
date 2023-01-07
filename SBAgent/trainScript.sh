@@ -5,7 +5,7 @@
 #SBATCH --time=4-00:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --mem=16G
-#SBATCH -o output_v4.txt
-#SBATCH --job-name=train_v4
+#SBATCH -o output_v5_noise_0.1_retrain.txt
+#SBATCH --job-name=train_v5_kf_0.1
 
 python TrainModel.py
