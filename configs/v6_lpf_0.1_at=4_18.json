@@ -23,6 +23,6 @@
     "noise":true,
     "mean":0,
     "std_dev":0.1,
-    "denoiser":"None",
+    "denoiser":"LPFDenoiser",
     "measurement_noise":0.1
 }

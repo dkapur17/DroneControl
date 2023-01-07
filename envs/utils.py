@@ -6,13 +6,18 @@ import numpy as np
 
 class PositionConstraint:
 
-    def __init__(self, xmin, xmax, ymin, ymax, zmin, zmax):
+    def __init__(self, xmin, xmax, ymin, ymax, zmin, zmax,noise, mean,std_dev,denoiser,cutoff_freq=0.1):
         self.xmin = xmin
         self.xmax = xmax
         self.ymin = ymin
         self.ymax = ymax
         self.zmin = zmin
         self.zmax = zmax
+        self.noise = noise
+        self.denoiser = denoiser
+        self.mean = mean
+        self.std_dev = std_dev
+        self.cutoff_freq = cutoff_freq
 
     def generateRandomPosition(self, padding:float=0):
         x = np.random.uniform(self.xmin + padding, self.xmax - padding)
@@ -79,6 +84,7 @@ class PositionConstraint:
     def inBounds(self, pos):
         return self.inXBounds(pos[0]) and self.inYBounds(pos[1]) and self.inZBounds(pos[2])
 
+
 class ConfigManager:
 
     @staticmethod
@@ -87,7 +93,8 @@ class ConfigManager:
             configData = json.load(f)
 
         configData = Namespace(**configData)
-        geoFence = PositionConstraint(configData.xmin, configData.xmax, configData.ymin, configData.ymax, configData.zmin, configData.zmax)
+        print("Config Data: ", configData)
+        geoFence = PositionConstraint(configData.xmin, configData.xmax, configData.ymin, configData.ymax, configData.zmin, configData.zmax,configData.noise, configData.mean, configData.std_dev, configData.denoiser)
         configData.geoFence = geoFence
 
         del configData.xmin
@@ -97,8 +104,8 @@ class ConfigManager:
         del configData.zmin
         del configData.zmax
 
-        # configData.gui = not training
-        configData.gui = False
+        configData.gui = not training
+        # configData.gui = False
 
 
         return vars(configData)

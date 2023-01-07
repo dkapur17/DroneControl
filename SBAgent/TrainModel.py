@@ -8,16 +8,36 @@ from envs.utils import ConfigManager
 from envs.NoisyAviary import NoiseWrapper1, NoiseWrapper2
 from envs.Denoise import KFDenoiser, LPFDenoiser
 
-# version = 'v1'
-version='v5_2d_noise_0.1'
+version='v6_lpf_0.1_at=4_18'
+
 
 config = ConfigManager.loadConfig(f'../configs/{version}.json', training=True)
-denoiser= None
+
 # denoiser = KFDenoiser(measurement_noise=0.1)
 
-# env = ObstacleAviary(**config)
-env = NoiseWrapper1(env=ObstacleAviary(**config), noise_mean=0, noise_stddev=0.1, denoiser=denoiser)
-# env = NoiseWrapper2(ObstacleAviary(**config), noise_mean=config["noise_mean"], noise_stddev=config["noise_stddev"])
+config_noise = config["noise"]
+config_mean = config["mean"]
+config_std_dev = config["std_dev"]
+config_denoiser = config["denoiser"]
+config_measurement_noise = config["measurement_noise"]
+
+del config["noise"]
+del config["mean"]
+del config["std_dev"]
+del config["denoiser"]
+del config["measurement_noise"]
+
+
+if config_noise == False:
+    env = ObstacleAviary(**config)
+else:
+  if config_denoiser=="None":
+    env = NoiseWrapper1(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=None)
+  if config_denoiser=="LPFDenoiser":
+    env = NoiseWrapper1(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=LPFDenoiser())
+  elif config_denoiser=="KFDenoiser":
+    env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=KFDenoiser(measurement_noise=config["measurement_noise"]))
+
 
 checkpoint_callback = CheckpointCallback(
   save_freq=1000000,

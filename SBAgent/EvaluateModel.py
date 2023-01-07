@@ -10,28 +10,42 @@ from envs.Denoise import KFDenoiser, LPFDenoiser
 import random
 import numpy as np
 random.seed(0)
+np.random.seed(0)
 
-version = 'v5_2d_lpf_0.05_0.1'
-# version = 'v3'
-
+version = 'v5_2d_lpf_0.01'
 
 
 
 config = ConfigManager.loadConfig(f'../configs/{version}.json')
 
-# denoiser = None
-denoiser = LPFDenoiser()
-# denoiser = KFDenoiser(measurement_noise=0.1)
+config_noise = config["noise"]
+config_mean = config["mean"]
+config_std_dev = config["std_dev"]
+config_denoiser = config["denoiser"]
+config_measurement_noise = config["measurement_noise"]
 
-# env = ObstacleAviary(**config)
-env = NoiseWrapper1(env=ObstacleAviary(**config), noise_mean=0, noise_stddev=0.1, denoiser=denoiser)
-# env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=0, noise_stddev=0.05, denoiser=denoiser)
+del config["noise"]
+del config["mean"]
+del config["std_dev"]
+del config["denoiser"]
+del config["measurement_noise"]
 
-# agent = PPO.load(f'models/ppo_{version}')
-agent = PPO.load(f'logs/ppo_v5_2d_noise_0.1_5000000_steps')
+
+if config_noise == False:
+    env = ObstacleAviary(**config)
+else:
+  if config_denoiser=="None":
+    env = NoiseWrapper1(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=None)
+  if config_denoiser=="LPFDenoiser":
+    env = NoiseWrapper1(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=LPFDenoiser())
+  elif config_denoiser=="KFDenoiser":
+    env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=KFDenoiser(measurement_noise=config["measurement_noise"]))
+
+agent = PPO.load(f'models/ppo_{version}')
+# agent = PPO.load(f'logs/ppo_v1_10000000_steps')
 
 
-totalTrials = 1000
+totalTrials = 100
 successfulTrials = 0
 collisions = 0
 unsuccessfulDistances = []
@@ -68,6 +82,11 @@ print(f"---------------------------------------------------------")
 print(f"EVALUATION STATISTICS")
 print()
 print(f"Success Rate: {successfulTrials/totalTrials * 100:.2f}%")
+print(f"Collision Rate: {collisions/totalTrials * 100:.2f}%")
+if len(unsuccessfulDistances) > 0:
+    print(f"Mean Distance to Target: {sum(unsuccessfulDistances)/len(unsuccessfulDistances):.2f}")
+else:
+    print(f"Mean Distance to Target: N/A")
 print(f"Mean Reward: {sum(rewards)/len(rewards):.2f}")
 print(f"Minimum Reward: {min(rewards):.2f}")
 print(f"Maximium Reward: {max(rewards):.2f}")

@@ -277,15 +277,15 @@ class ObstacleAviary(BaseSingleAgentAviary):
         pos = state[:3]
 
         if self.episodeLength != -1 and self.episodeStepCount >= self.episodeLength:
-            return {'success': False}
+            return {'success': False , 'reason': 'episode_length exceeded'}
 
         if np.linalg.norm(self.targetPos - pos) < 0.1:
-            return {'success': True}
+            return {'success': True , 'reason': 'goal_reached'}
 
         offsetToClosestObstacle = self._computeOffsetToClosestObstacle()
 
         if np.linalg.norm(offsetToClosestObstacle) <= ObstacleAviary.COLLISION_BOUND_RADIUS:
-            return {'success': False}
+            return {'success': False , 'reason': 'collision'}
 
         return {}
 

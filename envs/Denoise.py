@@ -3,10 +3,12 @@ import numpy as np
 
 class LPFDenoiser:
     def __init__(self) -> None:
-        cutoff_freq=0.1
+        # cutoff_freq=0.07
         control_freq=48
-        a=2*np.pi*cutoff_freq
-        self.aT=(1/control_freq)*a 
+        # a=2*np.pi*cutoff_freq
+        # self.aT=(1/control_freq)*a
+        # self.aT=(1/control_freq)*a 
+        self.aT=4/18 
     
     def initiate(self, obs):
         pass

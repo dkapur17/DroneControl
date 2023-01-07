@@ -19,5 +19,10 @@
     "randomizeDronePosition": false,
     "randomizeTargetPosition": false,
     "freq": 240,
-    "aggregatePhyStep": 5
+    "aggregatePhyStep": 5,
+    "noise":true,
+    "mean":0,
+    "std_dev":0.01,
+    "denoiser":"None",
+    "measurement_noise":0.1
 }
