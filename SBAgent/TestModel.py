@@ -10,7 +10,7 @@ from envs.NoisyAviary import NoiseWrapper1,NoiseWrapper2
 from envs.Denoise import KFDenoiser, LPFDenoiser
 
 
-version = 'v5_2d_lpf_0.01'
+version = 'v6_kf'
 
 
 config = ConfigManager.loadConfig(f'../configs/{version}.json')
@@ -36,7 +36,7 @@ else:
   if config_denoiser=="LPFDenoiser":
     env = NoiseWrapper1(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=LPFDenoiser())
   elif config_denoiser=="KFDenoiser":
-    env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=KFDenoiser(measurement_noise=config["measurement_noise"]))
+    env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=KFDenoiser(measurement_noise=config_measurement_noise))
 
 agent = PPO.load(f'models/ppo_{version}')
 

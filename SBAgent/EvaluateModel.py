@@ -12,7 +12,7 @@ import numpy as np
 random.seed(0)
 np.random.seed(0)
 
-version = 'v5_2d_lpf_0.01'
+version = 'v6_lpf_0.1_exp_avg_alpha=0.1'
 
 
 
@@ -39,10 +39,11 @@ else:
   if config_denoiser=="LPFDenoiser":
     env = NoiseWrapper1(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=LPFDenoiser())
   elif config_denoiser=="KFDenoiser":
-    env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=KFDenoiser(measurement_noise=config["measurement_noise"]))
+    env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=KFDenoiser(measurement_noise=config_measurement_noise))
 
+print(f'models/ppo_{version}')
 agent = PPO.load(f'models/ppo_{version}')
-# agent = PPO.load(f'logs/ppo_v1_10000000_steps')
+# agent = PPO.load(f'logs/ppo_v6_kf_9000000_steps.zip')
 
 
 totalTrials = 100

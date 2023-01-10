@@ -8,7 +8,7 @@ from envs.utils import ConfigManager
 from envs.NoisyAviary import NoiseWrapper1, NoiseWrapper2
 from envs.Denoise import KFDenoiser, LPFDenoiser
 
-version='v6_lpf_0.1_at=4_18'
+version='v6_lpf_0.1_exp_avg_alpha=0.1'
 
 
 config = ConfigManager.loadConfig(f'../configs/{version}.json', training=True)
@@ -36,7 +36,7 @@ else:
   if config_denoiser=="LPFDenoiser":
     env = NoiseWrapper1(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=LPFDenoiser())
   elif config_denoiser=="KFDenoiser":
-    env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=KFDenoiser(measurement_noise=config["measurement_noise"]))
+    env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=KFDenoiser(measurement_noise=config_measurement_noise))
 
 
 checkpoint_callback = CheckpointCallback(
