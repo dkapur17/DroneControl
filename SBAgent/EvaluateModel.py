@@ -12,7 +12,7 @@ import numpy as np
 random.seed(0)
 np.random.seed(0)
 
-version = 'v6_lpf_0.1_exp_avg_alpha=0.1'
+version = 'v7_lpf'
 
 
 
@@ -46,7 +46,7 @@ agent = PPO.load(f'models/ppo_{version}')
 # agent = PPO.load(f'logs/ppo_v6_kf_9000000_steps.zip')
 
 
-totalTrials = 100
+totalTrials = 1000
 successfulTrials = 0
 collisions = 0
 unsuccessfulDistances = []

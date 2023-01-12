@@ -8,7 +8,7 @@ from envs.utils import ConfigManager
 from envs.NoisyAviary import NoiseWrapper1, NoiseWrapper2
 from envs.Denoise import KFDenoiser, LPFDenoiser
 
-version='v6_lpf_0.1_exp_avg_alpha=0.1'
+version='v8_2d_noise_0.05'
 
 
 config = ConfigManager.loadConfig(f'../configs/{version}.json', training=True)

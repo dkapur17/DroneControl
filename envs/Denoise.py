@@ -9,7 +9,7 @@ class LPFDenoiser:
         # self.aT=(1/control_freq)*a
         # self.aT=(1/control_freq)*a 
         self.aT=4/3 
-        self.alpha = 0.1
+        self.alpha = 0.3
     
     def initiate(self, obs):
         pass
