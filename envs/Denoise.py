@@ -24,21 +24,21 @@ class LPFDenoiser:
         return yf
 
 class KFDenoiser:
-    def __init__(self, measurement_noise, freq=48, process_noise=0.01, state_size=5, action_size=2) -> None:
+    def __init__(self, measurement_noise, freq=48, process_noise=0.01, state_size=2, action_size=2) -> None:
         self.mu = np.zeros(state_size)
         self.sigma = np.zeros((state_size, state_size))
 
         # KF matrices
         self.A = np.eye(state_size)
         self.B = np.zeros((state_size, action_size))
-        self.B[0][0] = self.B[1][1] = self.B[2][0] = self.B[3][1] = -1 / freq
+        self.B[0][0] = self.B[1][1] = 1 / freq
         self.C = np.eye(state_size)
 
         # Noise covariance matrices
         self.R = np.eye(state_size) * process_noise
         self.Q = np.eye(state_size) * measurement_noise
-        self.R[-1][-1] = 0
-        self.Q[-1][-1] = 0
+        # self.R[-1][-1] = 0
+        # self.Q[-1][-1] = 0
 
         self.action_size = action_size
         self.state_size = state_size

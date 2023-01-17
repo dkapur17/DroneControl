@@ -5,7 +5,7 @@
 #SBATCH --time=4-00:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --mem=16G
-#SBATCH -o output_v8_2d_noise_0.05.txt
-#SBATCH --job-name=v8_2d_noise_0.05
+#SBATCH -o output_v1_practical2.txt
+#SBATCH --job-name=v1_practical2
 
 python TrainModel.py

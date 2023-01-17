@@ -5,15 +5,15 @@ from envs.ObstacleAviary import ObstacleAviary
 from envs.utils import ConfigManager
 from stable_baselines3 import PPO
 from tqdm import tqdm
-from envs.NoisyAviary import NoiseWrapper1,NoiseWrapper2
+from envs.NoisyAviary import NoiseWrapper2
 from envs.Denoise import KFDenoiser, LPFDenoiser
 import random
 import numpy as np
-random.seed(0)
-np.random.seed(0)
+# random.seed(0)
+# np.random.seed(0)
 
-version = 'v7_lpf'
-
+version = 'v1_practical2'
+# version = 'v9_kf_new'
 
 
 config = ConfigManager.loadConfig(f'../configs/{version}.json')
@@ -35,18 +35,18 @@ if config_noise == False:
     env = ObstacleAviary(**config)
 else:
   if config_denoiser=="None":
-    env = NoiseWrapper1(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=None)
+    env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=None)
   if config_denoiser=="LPFDenoiser":
-    env = NoiseWrapper1(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=LPFDenoiser())
+    env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=LPFDenoiser())
   elif config_denoiser=="KFDenoiser":
-    env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=KFDenoiser(measurement_noise=config_measurement_noise))
+    env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=KFDenoiser(measurement_noise=config_measurement_noise), reward_mech=None)
 
 print(f'models/ppo_{version}')
 agent = PPO.load(f'models/ppo_{version}')
-# agent = PPO.load(f'logs/ppo_v6_kf_9000000_steps.zip')
+# agent = PPO.load(f'logs/ppo_v1_practical_1000000_steps')
 
 
-totalTrials = 1000
+totalTrials = 10
 successfulTrials = 0
 collisions = 0
 unsuccessfulDistances = []

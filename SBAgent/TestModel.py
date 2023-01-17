@@ -6,11 +6,11 @@ from envs.utils import ConfigManager
 from stable_baselines3 import PPO
 import numpy as np
 import matplotlib.pyplot as plt
-from envs.NoisyAviary import NoiseWrapper1,NoiseWrapper2
+from envs.NoisyAviary import NoiseWrapper2
 from envs.Denoise import KFDenoiser, LPFDenoiser
 
 
-version = 'v6_kf'
+version = 'v1_practical'
 
 
 config = ConfigManager.loadConfig(f'../configs/{version}.json')
@@ -32,11 +32,11 @@ if config_noise == False:
     env = ObstacleAviary(**config)
 else:
   if config_denoiser=="None":
-    env = NoiseWrapper1(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=None)
+    env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=None)
   if config_denoiser=="LPFDenoiser":
-    env = NoiseWrapper1(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=LPFDenoiser())
+    env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=LPFDenoiser())
   elif config_denoiser=="KFDenoiser":
-    env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=KFDenoiser(measurement_noise=config_measurement_noise))
+    env = NoiseWrapper2(env=ObstacleAviary(**config), noise_mean=config_mean, noise_stddev=config_std_dev, denoiser=KFDenoiser(measurement_noise=config_measurement_noise), reward_mech=None)
 
 agent = PPO.load(f'models/ppo_{version}')
 

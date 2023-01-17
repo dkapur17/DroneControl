@@ -111,10 +111,24 @@ class ObstacleAviary(BaseSingleAgentAviary):
         actUpperBound = np.array([1] * (3 if self.fixedAltitude else 4))
         return spaces.Box(low=actLowerBound, high=actUpperBound, dtype=np.float32)
 
-    def _computeObs(self):
+    # def _getDroneStateVector(self, id):
+    #     state = super()._getDroneStateVector(0)
+    #     print(state)
+    #     noise = np.random.normal(loc=0, scale=0.01, size=state.shape)
+    #     noise[2] = 0 # no noise on z position
+    #     print(noise)
+    #     return state + noise
 
-        state = self._getDroneStateVector(0)
-        pos = state[:3]
+
+    def _computeObs(self, pos_vec=None):
+        if pos_vec is None:
+            state = self._getDroneStateVector(0)
+            pos = state[:3]
+        else:
+            pos = pos_vec
+
+        # state = self._getDroneStateVector(0)
+        # pos = state[:3]
 
         offsetToTarget = self.targetPos - pos
 
@@ -186,10 +200,14 @@ class ObstacleAviary(BaseSingleAgentAviary):
         return super().step(action)
 
 
-    def _computeReward(self):
+    def _computeReward(self, pos_vec=None):
+        if pos_vec is None:
+            state = self._getDroneStateVector(0)
+            pos = state[:3]
+        else:
+            pos = pos_vec
 
-        state = self._getDroneStateVector(0)
-        pos = state[:3]
+        # pos = state[:3]
 
         if np.linalg.norm(self.targetPos - pos) < ObstacleAviary.SUCCESS_EPSILON:
             return ObstacleAviary.SUCCESS_REWARD
@@ -322,25 +340,27 @@ class ObstacleAviary(BaseSingleAgentAviary):
 
     def _generateObstaclePositions(self):
         self.obstaclePositions = []
-        
-        if self.assistLearning and self.totalTimesteps <= self.lenientUntil:
-            nObstacles = 0
-        else:
-            nObstacles = np.random.randint(self.minObstacles, self.maxObstacles)
-        for _ in range(nObstacles):
-            # Position along all axes is uniform
-            obstaclePos = self.geoFence.generateRandomPosition(padding=0.2)
+        self.obstaclePositions.append(np.array([0.7, -0.1, 0.5]))
+        self.obstaclePositions.append(np.array([1.2, 0.3, 0.5]))
+        print(self.obstaclePositions)
+        # if self.assistLearning and self.totalTimesteps <= self.lenientUntil:
+        #     nObstacles = 0
+        # else:
+        #     nObstacles = np.random.randint(self.minObstacles, self.maxObstacles)
+        # for _ in range(nObstacles):
+        #     # Position along all axes is uniform
+        #     obstaclePos = self.geoFence.generateRandomPosition(padding=0.2)
 
-            # Sample Y-axis position from normal distribution for more obstacles towards the middle of the path
-            obstaclePos[1] = np.random.random() * (self.geoFence.ymax - self.geoFence.ymin - 0.4) + (self.geoFence.ymin + 0.2)
+        #     # Sample Y-axis position from normal distribution for more obstacles towards the middle of the path
+        #     obstaclePos[1] = np.random.random() * (self.geoFence.ymax - self.geoFence.ymin - 0.4) + (self.geoFence.ymin + 0.2)
             
-            # Sample Z-axis position from normal distribution for more obstacles towards the initial altitude of the drone
-            obstaclePos[2] = np.random.random() * (self.geoFence.zmax - self.geoFence.zmin - 0.4) + (self.geoFence.zmin + 0.2)
+        #     # Sample Z-axis position from normal distribution for more obstacles towards the initial altitude of the drone
+        #     obstaclePos[2] = np.random.random() * (self.geoFence.zmax - self.geoFence.zmin - 0.4) + (self.geoFence.zmin + 0.2)
 
-            if self.fixedAltitude:
-                obstaclePos[2] = self.altitude + (np.random.random() - 0.5)*0.2
+        #     if self.fixedAltitude:
+        #         obstaclePos[2] = self.altitude + (np.random.random() - 0.5)*0.2
             
-            self.obstaclePositions.append(obstaclePos)
+        #     self.obstaclePositions.append(obstaclePos)
 
 
     def _spawnObstacles(self):
