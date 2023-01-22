@@ -1,16 +1,15 @@
 import sys
 sys.path.append("..")
 
-from envs.ObstacleAviary import ObstacleAviary
-from envs.utils import ConfigManager
+from envs.utils.EnvBuilder import EnvBuilder
 from stable_baselines3 import PPO
 from tqdm import tqdm
 
-version = 'v2'
+config_name = "v1"
+model_name = "baseline"
 
-config = ConfigManager.loadConfig(f'../configs/{version}.json')
-env = ObstacleAviary(**config)
-agent = PPO.load(f'models/ppo_{version}')
+env = EnvBuilder(f'../configs/{config_name}.json', gui=True)
+agent = PPO.load(f'models/{model_name}')
 
 totalTrials = 10
 successfulTrials = 0

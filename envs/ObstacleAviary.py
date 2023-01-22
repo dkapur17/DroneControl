@@ -5,8 +5,9 @@ import pybullet_data
 from gym_pybullet_drones.utils.enums import DroneModel, Physics
 from gym_pybullet_drones.envs.single_agent_rl.BaseSingleAgentAviary import BaseSingleAgentAviary, ActionType, ObservationType
 from gym import spaces
+from typing import List, Union
 
-from .utils import PositionConstraint
+from .utils.PositionConstraint import PositionConstraint
 
 class ObstacleAviary(BaseSingleAgentAviary):
 
@@ -16,82 +17,77 @@ class ObstacleAviary(BaseSingleAgentAviary):
 
     SUCCESS_EPSILON = 0.1
 
-    MINOR_SAFETY_BOUND_RADIUS = 0.3
-    MAJOR_SAFETY_BOUND_RADIUS = 0.2
+    MINOR_SAFETY_BOUND_RADIUS = 0.2
+    MAJOR_SAFETY_BOUND_RADIUS = 0.1 
     COLLISION_BOUND_RADIUS = 0.07
 
     def __init__(self,
                  geoFence:PositionConstraint,
-                 useSafetyBounds:bool=True,
+                 provideFixedObstacles:bool=False,
+                 obstacles:Union[List[np.ndarray], None]=None,
                  minObstacles:int=2,
                  maxObstacles:int=7,
                  randomizeObstaclesEveryEpisode:bool=True,
-                 assistLearning:bool=True,
-                 lenientUntil:int=1000000,
                  fixedAltitude:bool=False,
                  episodeLength:int=1000,
-                 showGeoFence:bool=False,
-                 showTrajectory:bool=False,
-                 showProximityLines:bool=False,
+                 showDebugLines:bool=False,
                  randomizeDronePosition:bool=False,
-                 randomizeTargetPosition:bool=False,
-                 gui:bool=False,
-                 freq:int=240,
-                 aggregatePhyStep:int=1):
+                 simFreq:int=240,
+                 controlFreq:int=48,
+                 gui:bool=False):
 
 
-        assert minObstacles <= maxObstacles
+        assert minObstacles <= maxObstacles, "Cannot have fewer minObstacles than maxObstacles"
+
+        self.provideFixedObstacles = provideFixedObstacles
 
         self.fixedAltitude = fixedAltitude
-        self.useSafetyBounds = useSafetyBounds   
-        self.assistLearning = assistLearning     
 
         self.minObstacles = minObstacles
         self.maxObstacles = maxObstacles
         self.episodeLength = episodeLength
-        self.lenientUntil = lenientUntil
         self.episodeStepCount = 0
 
         self.geoFence = geoFence
 
         self.randomizeDronePosition = randomizeDronePosition
-        self.randomizeTargetPosition = randomizeTargetPosition
-        self.randomizeObstaclesEveryEpisode = randomizeObstaclesEveryEpisode
+        self.randomizeObstaclesEveryEpisode = randomizeObstaclesEveryEpisode and not self.provideFixedObstacles
+
+        self.targetPos = [self.geoFence.xmax - ObstacleAviary.MINOR_SAFETY_BOUND_RADIUS, (self.geoFence.ymin + self.geoFence.ymax)/2, (self.geoFence.zmin + self.geoFence.zmax)/2]
 
         if not randomizeDronePosition:
             self.initPos = [self.geoFence.xmin + ObstacleAviary.MINOR_SAFETY_BOUND_RADIUS, (self.geoFence.ymin + self.geoFence.ymax)/2, (self.geoFence.zmin + self.geoFence.zmax)/2]
         else:
-            raise NotImplementedError()
-
-        if not randomizeTargetPosition:
-            self.targetPos = [self.geoFence.xmax - ObstacleAviary.MINOR_SAFETY_BOUND_RADIUS, (self.geoFence.ymin + self.geoFence.ymax)/2, (self.geoFence.zmin + self.geoFence.zmax)/2]
-        else:
-            raise NotImplementedError()
-
+            self._randomizeDroneSpawnLocation()
+                            
         self.altitude = (self.geoFence.zmin + self.geoFence.zmax)/2
 
-        self.showGeoFence = gui and showGeoFence
-        self.showTrajectory = gui and showTrajectory
-        self.showProximityLines = gui and showProximityLines
+        self.showDebugLines = gui and showDebugLines
 
         self.trajectory = []
 
-        self.obstaclePositions = []
         self.obstacles = []
         self.totalTimesteps = 0
+
+        self.simFreq = simFreq
+        self.controlFreq = controlFreq
+        self.aggregatePhysicsSteps = simFreq//controlFreq
 
         super().__init__(drone_model=DroneModel.CF2X,
                         initial_xyzs=np.array([self.initPos]),
                         initial_rpys=np.array([[0, 0, 0]]),
                         physics=Physics.PYB,
-                        freq=freq,
-                        aggregate_phy_steps=aggregatePhyStep,
+                        freq=self.simFreq,
+                        aggregate_phy_steps=self.aggregatePhysicsSteps,
                         gui=gui,
                         record=False,
                         obs=ObservationType.KIN,
                         act=ActionType.VEL)
 
-        self._generateObstaclePositions()
+        if self.provideFixedObstacles:
+            self.obstaclePositions = obstacles
+        else:
+            self._generateObstaclePositions()
 
         self.offsetLine = None
         self.targetLine = None
@@ -134,6 +130,10 @@ class ObstacleAviary(BaseSingleAgentAviary):
         self.targetLine = None
         
         p.resetSimulation(physicsClientId=self.CLIENT)
+
+        if self.randomizeDronePosition:
+            self._randomizeDroneSpawnLocation()
+
         self._housekeeping()
         self._updateAndStoreKinematicInformation()
 
@@ -144,7 +144,7 @@ class ObstacleAviary(BaseSingleAgentAviary):
 
         self._spawnObstacles()
 
-        if self.showGeoFence:
+        if self.showDebugLines:
             self._drawGeoFence()
 
         return self._computeObs()
@@ -170,7 +170,7 @@ class ObstacleAviary(BaseSingleAgentAviary):
 
         offsetToClosestObstacle = self._computeOffsetToClosestObstacle()
 
-        if self.showProximityLines:
+        if self.showDebugLines:
             if np.linalg.norm(offsetToClosestObstacle) < ObstacleAviary.MAJOR_SAFETY_BOUND_RADIUS:
                 self.offsetLine = p.addUserDebugLine(pos, pos + offsetToClosestObstacle, np.array([1, 0, 0]))
             elif np.linalg.norm(offsetToClosestObstacle) < ObstacleAviary.MINOR_SAFETY_BOUND_RADIUS:
@@ -180,7 +180,7 @@ class ObstacleAviary(BaseSingleAgentAviary):
                 self.targetLine = p.addUserDebugLine(self.targetPos, pos, np.array([0, 1, 0]))
             
 
-        if self.showTrajectory:
+        if self.showDebugLines:
             self._drawTrajectory()
 
         return super().step(action)
@@ -204,8 +204,8 @@ class ObstacleAviary(BaseSingleAgentAviary):
         if distToClosestObstacle < ObstacleAviary.COLLISION_BOUND_RADIUS:
             return ObstacleAviary.COLLISION_PENALTY
 
-        majorBoundBreach = distToClosestObstacle < ObstacleAviary.MAJOR_SAFETY_BOUND_RADIUS and self.useSafetyBounds
-        minorBoundBreach = distToClosestObstacle < ObstacleAviary.MINOR_SAFETY_BOUND_RADIUS and self.useSafetyBounds
+        majorBoundBreach = distToClosestObstacle < ObstacleAviary.MAJOR_SAFETY_BOUND_RADIUS
+        minorBoundBreach = distToClosestObstacle < ObstacleAviary.MINOR_SAFETY_BOUND_RADIUS
 
         return np.linalg.norm(pos - self.initPos) - np.linalg.norm(self.targetPos - pos) - 10*majorBoundBreach - 2*minorBoundBreach
 
@@ -323,10 +323,8 @@ class ObstacleAviary(BaseSingleAgentAviary):
     def _generateObstaclePositions(self):
         self.obstaclePositions = []
         
-        if self.assistLearning and self.totalTimesteps <= self.lenientUntil:
-            nObstacles = 0
-        else:
-            nObstacles = np.random.randint(self.minObstacles, self.maxObstacles)
+       
+        nObstacles = np.random.randint(self.minObstacles, self.maxObstacles)
         for _ in range(nObstacles):
             # Position along all axes is uniform
             obstaclePos = self.geoFence.generateRandomPosition(padding=0.2)
@@ -349,3 +347,11 @@ class ObstacleAviary(BaseSingleAgentAviary):
             currObstacle = p.loadURDF('sphere_small.urdf', obstaclePos, globalScaling=(np.random.random()+0.5))
             p.changeDynamics(currObstacle, -1, mass=0)
             self.obstacles.append(currObstacle)
+
+    def _randomizeDroneSpawnLocation(self):
+        y_scale = self.geoFence.ymax - self.geoFence.ymin
+        self.initPos = np.array([self.geoFence.xmin + ObstacleAviary.MINOR_SAFETY_BOUND_RADIUS, 
+                        (self.geoFence.ymin + self.geoFence.ymax) + np.random.uniform(-y_scale/2 + ObstacleAviary.COLLISION_BOUND_RADIUS*2, y_scale/2 - ObstacleAviary.COLLISION_BOUND_RADIUS*2),
+                        (self.geoFence.zmin + self.geoFence.zmax)/2])
+
+        self.INIT_XYZS = np.array([self.initPos])

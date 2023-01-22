@@ -1,19 +1,17 @@
 import sys
 sys.path.append("..")
 
-from envs.ObstacleAviary import ObstacleAviary
-from envs.utils import ConfigManager
 from stable_baselines3 import PPO
 import numpy as np
 import matplotlib.pyplot as plt
+from envs.utils.EnvBuilder import EnvBuilder
 
-version = 'v1'
+config_name = "v1"
+model_name = "baseline"
 
-config = ConfigManager.loadConfig(f'../configs/{version}.json')
+env = EnvBuilder.buildEnvFromConfig(f'../configs/{config_name}.json', gui=True)
 
-env = ObstacleAviary(**config)
-
-agent = PPO.load(f'models/ppo_{version}')
+agent = PPO.load(f'models/{model_name}')
 
 done = False
 rewards = []
