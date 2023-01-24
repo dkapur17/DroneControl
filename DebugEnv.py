@@ -19,7 +19,7 @@ for _ in range(3):
 
     # plt.plot(range(len(xPos)), xPos)
     plt.title("Distance to Target")
-    plt.plot(range(len(env.denoiseEngine.observedHistory)), [np.linalg.norm(x[:3]) for x in env.denoiseEngine.observedHistory])
-    plt.plot(range(len(env.denoiseEngine.denoisedHistory)), [np.linalg.norm(x[:3]) for x in env.denoiseEngine.denoisedHistory])
+    plt.plot(range(len(env.denoiseEngine.observedHistory)), [x[0] for x in env.denoiseEngine.observedHistory])
+    plt.plot(range(len(env.denoiseEngine.denoisedHistory)), [x[0] for x in env.denoiseEngine.denoisedHistory])
     plt.legend(["Original", "Denoised"])
     plt.show()

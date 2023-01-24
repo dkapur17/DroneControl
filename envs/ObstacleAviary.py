@@ -23,6 +23,7 @@ class ObstacleAviary(BaseSingleAgentAviary):
 
     def __init__(self,
                  geoFence:PositionConstraint,
+                 returnRawObservations:bool=False,
                  provideFixedObstacles:bool=False,
                  obstacles:Union[List[np.ndarray], None]=None,
                  minObstacles:int=2,
@@ -40,6 +41,7 @@ class ObstacleAviary(BaseSingleAgentAviary):
         assert minObstacles <= maxObstacles, "Cannot have fewer minObstacles than maxObstacles"
 
         self.provideFixedObstacles = provideFixedObstacles
+        self.returnRawObservations = returnRawObservations
 
         self.fixedAltitude = fixedAltitude
 
@@ -94,15 +96,23 @@ class ObstacleAviary(BaseSingleAgentAviary):
 
     def _observationSpace(self):
 
-        # Drone Offset from target, and drone offset from nearest obstacle
-        obsLowerBound = np.array([-np.inf] * (2 if self.fixedAltitude else 3) + [-np.inf, -np.inf, -np.inf])
-        obsUpperBound = np.array([np.inf] * (2 if self.fixedAltitude else 3) + [np.inf, np.inf, np.inf])
+        
+        if self.returnRawObservations:
+            # [x y z xt yt zt xo yo zo]
+            # Get rid of z axis values for fixedAltitude
+            obsLowerBound = np.array([-np.inf] * (6 if self.fixedAltitude else 9))
+            obsUpperBound = np.array([np.inf] * (6 if self.fixedAltitude else 9))
+        else:
+            # [dxt dyt dzt dxo dyo dzo]
+            # Get rid of z axis values for fixedAltitude
+            obsLowerBound = np.array([-np.inf] * (4 if self.fixedAltitude else 6))
+            obsUpperBound = np.array([np.inf] * (4 if self.fixedAltitude else 6))
 
         return spaces.Box(low=obsLowerBound, high=obsUpperBound, dtype=np.float32)
 
     def _actionSpace(self):
         
-        # [vx, vy, vz, v_mag] or [vx, vy, v_mag] for fixed altitude
+        # [vx, vy, vz, v_mag] or [vx, vy, v_mag] for fixedAltitude
         actLowerBound = np.array([-1] * (3 if self.fixedAltitude else 4))
         actUpperBound = np.array([1] * (3 if self.fixedAltitude else 4))
         return spaces.Box(low=actLowerBound, high=actUpperBound, dtype=np.float32)
@@ -113,14 +123,36 @@ class ObstacleAviary(BaseSingleAgentAviary):
         pos = state[:3]
 
         offsetToTarget = self.targetPos - pos
+        offsetToClosestObstacle = self._computeOffsetToClosestObstacle()
 
         if self.fixedAltitude:
+            pos = pos[:2]
             offsetToTarget = offsetToTarget[:2]
+            offsetToClosestObstacle = offsetToClosestObstacle[:2]
 
-        offsetToClosestObstacle = self._computeOffsetToClosestObstacle()
-        observation = np.concatenate([offsetToTarget, offsetToClosestObstacle])
+        if self.returnRawObservations:
+            observation = np.concatenate([pos, pos + offsetToTarget, pos + offsetToClosestObstacle])
+        else:
+            observation = np.concatenate([offsetToTarget, offsetToClosestObstacle])
 
         return observation
+
+    def _computeProcessedObservation(self, rawObservation):
+
+        if self.fixedAltitude:
+            pos = rawObservation[:2]
+            targetPos = rawObservation[2:4]
+            closestObstaclePos = rawObservation[4:]
+        else:
+            pos = rawObservation[:3]
+            targetPos = rawObservation[3:6]
+            closestObstaclePos = rawObservation[6:]
+
+        offsetToTarget = targetPos - pos
+        offsetToClosestObstacle = closestObstaclePos - pos
+
+        return np.concatenate([offsetToTarget, offsetToClosestObstacle])
+        
 
     def reset(self):
         self.episodeStepCount = 0

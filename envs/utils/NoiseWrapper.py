@@ -3,6 +3,7 @@ import gym
 from typing import Union, Tuple
 
 from .DenoiseEngines import LPFDenoiseEngine, KFDenoiseEngine
+from ..ObstacleAviary import ObstacleAviary
 
 class GaussianNoiseGenerator:
 
@@ -15,7 +16,7 @@ class GaussianNoiseGenerator:
 
 class NoiseWrapper(gym.Wrapper):
 
-    def __init__(self, env:gym.Env, mu:float, sigma:float, denoiseEngine:Union[None, LPFDenoiseEngine, KFDenoiseEngine]=None) -> None:
+    def __init__(self, env:ObstacleAviary, mu:float, sigma:float, denoiseEngine:Union[None, LPFDenoiseEngine, KFDenoiseEngine]=None) -> None:
 
         super().__init__(env)
         self.denoiseEngine = denoiseEngine
@@ -28,31 +29,18 @@ class NoiseWrapper(gym.Wrapper):
         obs = self.corruptObservation(obs)
 
         if self.denoiseEngine is not None:
-            obs = self.denoiseEngine(obs)
+            pos_dim = 2 if self.env.fixedAltitude else 3
+            obs[:pos_dim] = self.denoiseEngine(obs[:pos_dim].copy())
+
+        # Compute processed observation from raw observation
+        obs = self.env._computeProcessedObservation(obs)
         
         return obs, reward, done, info
 
     def corruptObservation(self, obs:np.ndarray) -> np.ndarray:
 
-        nx, ny, nz = self.noiseGenerator.generateNoise(3)
-        if obs.shape[0] == 6:
-            dxt, dyt, dzt, dxo, dyo, dzo = obs
-        else:
-            dxt, dyt, dxo, dyo, dzo = obs
-            dzt = 0
-
-        dxt += nx
-        dyt += ny
-        dzt += nz
-        dxo += nx
-        dyo += ny
-        dzo += nz
-
-        if obs.shape[0] == 6:
-            obs = np.array([dxt, dyt, dzt, dxo, dyo, dzo])
-        else:
-            obs = np.array([dxt, dyt, dxo, dyo, dzo])
-
+        noise = self.noiseGenerator.generateNoise(2 if self.env.fixedAltitude else 3)
+        obs[:noise.shape[0]] += noise
         return obs
 
     def reset(self) -> np.ndarray:
