@@ -20,9 +20,11 @@
                 "mu": 0,
                 "sigma": 0.01,
                 "denoiseEngine": {
-                        "method": "kf",
+                        "method": "lpf",
                         "parameters": {
-                                "processNoise": 0
+                                "order": 2,
+                                "criticalFreq": 2,
+                                "ftype": "bessel"
                         }
                 }
         }

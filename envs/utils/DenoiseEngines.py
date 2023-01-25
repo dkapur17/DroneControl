@@ -50,12 +50,12 @@ class KFDenoiseEngine:
         if self.fixedAltitude:
 
             # state = [x, y, vx, vy]
-            # observation = [x, y, vx, vy]
+            # observation = [x, y]
             # A = 4x4 matrix for state transition
-            # C = 4x4 matrix for converting state into observation (I)
+            # C = 2x4 matrix for converting state into observation (I)
             # P0 = 4x4 
             # Q = 4x4 process noise covariance matrix
-            # R = 4x4 measurement noise covariance matrix
+            # R = 2x2 measurement noise covariance matrix
 
             A = np.array([
                           [1, 0, dt, 0],
@@ -64,25 +64,22 @@ class KFDenoiseEngine:
                           [0, 0, 0, 1]     
                         ])
 
-            C = np.eye(4)
+            C = np.eye(4)[:2]
 
             x0 = np.array([initPos[0], initPos[1], 0, 0])
             P0 = np.eye(4)
             Q = np.eye(4) * processNoise**2 
-            R = np.eye(4) * measurementNoise**2
-            # Remove measurement noise from velocity components
-            R[2][2] = 0
-            R[3][3] = 0
+            R = np.eye(2) * measurementNoise**2
 
         else:
 
             # state = [x, y, z, vx, vy, vz]
-            # observation = [x, y, z, vx, vy, vz]
+            # observation = [x, y, z]
             # A = 6x6 matrix for state transition
-            # C = 6x6 matrix for converting state into observation (I)
+            # C = 3x6 matrix for converting state into observation (I)
             # P0 = 6x6 
             # Q = 6x6 process noise covariance matrix
-            # R = 6x6 measurement noise covariance matrix
+            # R = 3x3 measurement noise covariance matrix
 
             A = np.array([
                           [1, 0, 0, dt, 0, 0],
@@ -93,16 +90,12 @@ class KFDenoiseEngine:
                           [0, 0, 0, 0, 0, 1]
                         ])
 
-            C = np.eye(6)
+            C = np.eye(6)[:3]
 
             x0 = np.array([initPos[0], initPos[1], initPos[2], 0, 0, 0])
             P0 = np.eye(6)
             Q = np.eye(6) * processNoise ** 2
-            R = np.eye(6) * measurementNoise ** 2
-            # Remove measurement noise from velocity components
-            R[3][3] = 0
-            R[4][4] = 0
-            R[5][5] = 0
+            R = np.eye(3) * measurementNoise ** 2
 
         self.initFilter(A, C, x0, P0, Q, R)
 
@@ -118,7 +111,7 @@ class KFDenoiseEngine:
         return denoisedX
         
     def process(self, z:np.ndarray, u:np.ndarray) -> np.ndarray:
-        observation = np.concatenate([z, u])
+        observation = z
         self.x_pred, self.P_pred = self.kf.filter_update(filtered_state_mean=self.x_pred, filtered_state_covariance=self.P_pred, observation=observation)
 
         return self.x_pred[:(2 if self.fixedAltitude else 3)].copy()

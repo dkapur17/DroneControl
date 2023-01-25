@@ -19,11 +19,6 @@
         "noiseParameters": {
                 "mu": 0,
                 "sigma": 0.01,
-                "denoiseEngine": {
-                        "method": "kf",
-                        "parameters": {
-                                "processNoise": 0
-                        }
-                }
+                "denoiseEngine": null
         }
 }

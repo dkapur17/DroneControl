@@ -1,17 +1,27 @@
 import sys
 sys.path.append("..")
 
+import os
+import argparse
 from envs.utils.EnvBuilder import EnvBuilder
 from stable_baselines3 import PPO
 from tqdm import tqdm
 
-config_name = "v1"
-model_name = "baseline"
+parser = argparse.ArgumentParser()
+parser.add_argument("configFileName", help="Name of the environment config file.", type=str)
+parser.add_argument("inputModelName", help="(base|finetuned + )Name of the model to load.", type=str)
+parser.add_argument("--trials", default=100, help="Number of episodes to evaluate for.", type=int)
+parser.add_argument("--gui", action=argparse.BooleanOptionalAction, help="Whether or not to show GUI")
 
-env = EnvBuilder(f'../configs/{config_name}.json', gui=True)
-agent = PPO.load(f'models/{model_name}')
+args = parser.parse_args()
 
-totalTrials = 10
+configFileName = args.configFileName
+modelName = args.outputModelName
+
+env = EnvBuilder.buildEnvFromConfig(os.path.join('..', 'configs', configFileName), gui=args.gui)
+agent = PPO.load(os.path.join('models', modelName))
+
+totalTrials = args.trails
 successfulTrials = 0
 rewards = []
 durations = []

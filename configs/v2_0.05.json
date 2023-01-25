@@ -18,12 +18,7 @@
         "controlFreq": 48,
         "noiseParameters": {
                 "mu": 0,
-                "sigma": 0.01,
-                "denoiseEngine": {
-                        "method": "kf",
-                        "parameters": {
-                                "processNoise": 0
-                        }
-                }
+                "sigma": 0.05,
+                "denoiseEngine": null
         }
 }

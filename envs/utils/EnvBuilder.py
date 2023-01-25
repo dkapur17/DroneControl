@@ -48,6 +48,8 @@ class EnvBuilder:
                 denoiseEngine = KFDenoiseEngine(noiseParameters.sigma, 1/configData.controlFreq, innerEnv.fixedAltitude, innerEnv.initPos, **denoiseEngineData.parameters)
             else:
                 raise NotImplementedError(f"Denoise Method {denoiseEngineData.method} not implemented")
+        else:
+            denoiseEngine = None
 
         env = NoiseWrapper(innerEnv, noiseParameters.mu, noiseParameters.sigma, denoiseEngine)
 
