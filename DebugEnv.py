@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from envs.utils.EnvBuilder import EnvBuilder
 
-env = EnvBuilder.buildEnvFromConfig('configs/v1.json', gui=True)
+env = EnvBuilder.buildEnvFromConfig('configs/sample.json', gui=True)
 
 for _ in range(3):
     done = False
