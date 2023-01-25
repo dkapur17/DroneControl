@@ -5,7 +5,7 @@ from .PositionConstraint import PositionConstraint
 from ..ObstacleAviary import ObstacleAviary
 from .NoiseWrapper import NoiseWrapper
 
-from .DenoiseEngines import LPFDenoiseEngine
+from .DenoiseEngines import LPFDenoiseEngine, KFDenoiseEngine
 
 class EnvBuilder:
 
@@ -27,8 +27,16 @@ class EnvBuilder:
         del configData.ymax
         del configData.zmin
         del configData.zmax
-        
+
+        # Save the noise parameters
         noiseParameters = Namespace(**configData.noiseParameters)
+
+        # Delete them from config
+        del configData.noiseParameters
+        configData.gui = gui
+        
+        # Build the environment first, as some of its variables are needed in the denoise Engine
+        innerEnv = ObstacleAviary(**vars(configData))
 
         denoiseEngineData = noiseParameters.denoiseEngine
 
@@ -36,14 +44,10 @@ class EnvBuilder:
             denoiseEngineData = Namespace(**denoiseEngineData)
             if denoiseEngineData.method == 'lpf':
                 denoiseEngine = LPFDenoiseEngine(**denoiseEngineData.parameters, freq=configData.controlFreq)
+            elif denoiseEngineData.method == 'kf':
+                denoiseEngine = KFDenoiseEngine(noiseParameters.sigma, 1/configData.controlFreq, innerEnv.fixedAltitude, innerEnv.initPos, **denoiseEngineData.parameters)
             else:
                 raise NotImplementedError(f"Denoise Method {denoiseEngineData.method} not implemented")
-
-
-        del configData.noiseParameters
-        configData.gui = gui
-        
-        innerEnv = ObstacleAviary(**vars(configData))
 
         env = NoiseWrapper(innerEnv, noiseParameters.mu, noiseParameters.sigma, denoiseEngine)
 

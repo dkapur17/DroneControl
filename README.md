@@ -63,3 +63,21 @@ To use a Low Pass Filter as the Denoise Engine, set `"denoiseEngine"` to the fol
 * `criticalFreq`: Critical frequency of the underlying data. If you don't know what it means, just set it to `2`.
 
 * `ftype`: Type of IIR to design. Options are `"bessel"` for Bessel/Thomson and `"butter"`, for Butterworth.
+
+#### 3. Kalman Filter
+
+To use a Kalman Filter as the Denoise Engine, set `"denoiseEngine"` to the following:
+
+```JSON
+{
+    ...
+    "denoiseEngine": {
+        "method": "kf",
+        "parameters": {
+            "processNoise": float
+        }
+    }
+}
+```
+
+* `processNoise`: Standard Deviation of the process noise.

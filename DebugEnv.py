@@ -13,12 +13,12 @@ for _ in range(3):
     xPos = []
     while not done:
         ep_len += 1
-        obs, rew, done, info = env.step(np.array([1, 0, 0.5]))
+        obs, rew, done, info = env.step(np.array([np.random.uniform(0.5, 1), np.random.normal(0, 1), 0.5]))
+        print(obs.shape)
         xPos.append(obs[0])
     print(f"Episode Length: {ep_len}")
 
-    # plt.plot(range(len(xPos)), xPos)
-    plt.title("Distance to Target")
+    plt.title("Drone X Position")
     plt.plot(range(len(env.denoiseEngine.observedHistory)), [x[0] for x in env.denoiseEngine.observedHistory])
     plt.plot(range(len(env.denoiseEngine.denoisedHistory)), [x[0] for x in env.denoiseEngine.denoisedHistory])
     plt.legend(["Original", "Denoised"])
