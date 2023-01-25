@@ -2,6 +2,33 @@
 
 Code base for simulation and practical experimentation for autonomous drone obstacle avoidance with noise injection.
 
+## Component Interactions
+
+```mermaid
+flowchart LR
+
+%% Define all node components
+subgraph NoiseWrapper
+subgraph Environment
+step["step()"]
+stateProcessor["_computeProcessedState()"]
+end
+noiseGenerator["Noise Generator"]
+denoiseEngine["Denoise Engine"]
+end
+
+policy["Policy"]
+
+%% Define all connections
+step -->|Raw State|noiseGenerator
+noiseGenerator -->|Noisy Raw State|denoiseEngine
+denoiseEngine -->|Denoised Raw State|stateProcessor
+stateProcessor -->|Observation| policy
+step -->|Reward| policy
+policy -->|Action| denoiseEngine
+policy -->|Action| step
+```
+
 ## Making a config
 
 To make an experiment configuration, create a JSON in the `configs` directory of the following shape:
