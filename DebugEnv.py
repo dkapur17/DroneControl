@@ -9,6 +9,9 @@ args = parser.parse_args()
 
 env = EnvBuilder.buildEnvFromConfig(f'configs/{args.configFileName}', gui=True)
 
+print(env.observation_space.shape)
+print(env.observation_space.sample())
+
 for _ in range(3):
     done = False
     obs = env.reset()

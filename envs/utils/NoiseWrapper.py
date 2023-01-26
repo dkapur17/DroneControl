@@ -22,6 +22,8 @@ class NoiseWrapper(gym.Wrapper):
         self.denoiseEngine = denoiseEngine
         self.noiseGenerator = GaussianNoiseGenerator(mu, sigma)
 
+        self.observation_space = self.buildObservationSpace()
+
     def step(self, action:np.ndarray) -> Tuple[np.ndarray, float, bool, dict]:
 
         obs, reward, done, info = self.env.step(action)
@@ -37,6 +39,15 @@ class NoiseWrapper(gym.Wrapper):
         obs = self.env._computeProcessedObservation(obs)
         
         return obs, reward, done, info
+
+    def buildObservationSpace(self):
+
+        # [dxt dyt dzt dxo dyo dzo]
+        # Get rid of z axis values for fixedAltitude
+        obsLowerBound = np.array([-np.inf] * (4 if self.fixedAltitude else 6))
+        obsUpperBound = np.array([np.inf] * (4 if self.fixedAltitude else 6))
+
+        return gym.spaces.Box(low=obsLowerBound, high=obsUpperBound, dtype=np.float32)
 
     def computeVelocityFromAction(self, action):
 
@@ -62,6 +73,9 @@ class NoiseWrapper(gym.Wrapper):
         
         if self.denoiseEngine is not None:
             self.denoiseEngine.reset(self.env.initPos)
+
+        # Compute processed observation from raw observation
+        obs = self.env._computeProcessedObservation(obs)
         
         return obs
         
