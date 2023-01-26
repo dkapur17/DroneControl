@@ -29,9 +29,43 @@ policy -->|Action| denoiseEngine
 policy -->|Action| step
 ```
 
-## Making a config
+## Designing an Experiment
 
-To make an experiment configuration, create a JSON in the `configs` directory of the following shape:
+An experiment has 2 parts:
+
+1. Training phase: Choose an environment config to train a new agent on, and choose a model name to save the agent as after training.
+
+2. Evaluation phase: Choose the model to evaluate, and the environment to evaluate it on. Notice that the environment that you evaluate the model on doesn't necessarily have to be the same as the one you trained it on.
+
+To make an experiment, make a new config JSON in the `experimentConfigs/` directory. It should have the following shape:
+
+```json
+{
+    "name": str,
+    "trainParameters": {
+        "config": str (Only the name of the config file. Must be in the configs directory),
+        "outputModelName": str (base/finetuned + name of model. Must be in the SBAgent/models directory.)
+    },
+    "evaluationParameters": {
+        "config": str (Only the name of the config file. Must be in the configs directory),
+        "inputModelName": str (base/finetuned + name of model. Must be in the SBAgent/models directory.)
+    }
+}
+```
+
+Check out [experiment1.json](./experimentConfigs/experiment1.json) for reference.
+
+From here, you do one of two things:
+
+1. Train Step: Run `TrainDispatcher.py` to the model on the given environment. The script is written to dispatch a batch job on IIIT-H's HPC cluster, so modify it to run on your machine as needed.
+
+2. Evaluation Step: Run `SBAgent/EvaluateExperiment.py` to evaluate the model in the given environment.
+
+Both these scripts take the experiment config file location as an argument.
+
+## Making an environment config
+
+To make an environment configuration, create a JSON in the `configs` directory of the following shape:
 
 ```json
 {
