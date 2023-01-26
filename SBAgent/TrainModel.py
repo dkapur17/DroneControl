@@ -11,7 +11,7 @@ from envs.utils.EnvBuilder import EnvBuilder
 parser = argparse.ArgumentParser()
 parser.add_argument("configFileName", help="Name of the environment config file.", type=str)
 parser.add_argument("outputModelName", help="(base|finetuned + )Name to save the model with.", type=str)
-parser.add_argument("--steps", default=10_000_000, help="Number of timesteps to train for", type=int)
+parser.add_argument("-s", "--steps", default=2_000_000, help="Number of timesteps to train for", type=int)
 args = parser.parse_args()
 
 configFileName = args.configFileName

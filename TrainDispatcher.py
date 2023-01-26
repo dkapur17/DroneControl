@@ -7,6 +7,7 @@ import tempfile
 
 parser = argparse.ArgumentParser()
 parser.add_argument("experimentConfigFile", help="Experiment Config File Path")
+parser.add_argument("-s", "--steps", default=2_000_000, help="Number of timesteps to train for", type=int)
 args = parser.parse_args()
 
 with open('trainScriptTemplate.sh', 'r') as f:
@@ -23,6 +24,7 @@ script = script.replace("{outputFile}", f"jobOutputs/{experimentName}_train_outp
 script = script.replace("{jobName}", f"{experimentName}_train")
 script = script.replace("{configFile}", envConfig)
 script = script.replace("{outputModelName}", modelName)
+script = script.replace("{steps}", str(args.steps))
 
 tmp = tempfile.NamedTemporaryFile()
 

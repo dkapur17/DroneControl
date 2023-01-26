@@ -9,4 +9,4 @@
 #SBATCH --job-name={jobName}
 
 cd SBAgent
-python TrainModel.py {configFile} {outputModelName}
+python TrainModel.py {configFile} {outputModelName} --steps {steps}
