@@ -5,7 +5,7 @@
 #SBATCH --time=4-00:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --mem=16G
-#SBATCH -o {outputFileName}
+#SBATCH -o {outputFile}
 #SBATCH --job-name={jobName}
 
 cd SBAgent

@@ -1,5 +1,5 @@
 {
-    "name": "Experiment 1",
+    "name": "experiment1",
     "trainParameters": {
         "config": "v1.json",
         "outputModelName": "base/model1"

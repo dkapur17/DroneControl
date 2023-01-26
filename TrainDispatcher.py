@@ -19,10 +19,8 @@ experimentName = experimentConfig["name"]
 envConfig = experimentConfig["trainParameters"]["config"]
 modelName = experimentConfig["trainParameters"]["outputModelName"]
 
-jobOutputFile = os.path.join("jobOutputs", f"{modelName}_output.txt")
-
-script = script.replace("{outputFileName}", jobOutputFile)
-script = script.replace("{jobName}", experimentName)
+script = script.replace("{outputFile}", f"jobOutputs/{experimentName}_train_output.txt")
+script = script.replace("{jobName}", f"{experimentName}_train")
 script = script.replace("{configFile}", envConfig)
 script = script.replace("{outputModelName}", modelName)
 
