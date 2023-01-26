@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import tempfile
 
 parser = argparse.ArgumentParser()
 parser.add_argument("experimentConfigFile", help="Experiment Config File Path")
@@ -25,6 +26,11 @@ script = script.replace("{jobName}", experimentName)
 script = script.replace("{configFile}", envConfig)
 script = script.replace("{outputModelName}", modelName)
 
+tmp = tempfile.NamedTemporaryFile()
+
+with open(tmp.name, 'w') as f:
+    f.write(script)
+
 print(f"Dispatching Train Job for {experimentName}")
 
-os.system(f"echo {script} | sbatch /dev/stdin")
+os.system(f"sbatch {tmp.name}")
