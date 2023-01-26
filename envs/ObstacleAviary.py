@@ -239,7 +239,7 @@ class ObstacleAviary(BaseSingleAgentAviary):
         majorBoundBreach = distToClosestObstacle < ObstacleAviary.MAJOR_SAFETY_BOUND_RADIUS
         minorBoundBreach = distToClosestObstacle < ObstacleAviary.MINOR_SAFETY_BOUND_RADIUS
 
-        return np.linalg.norm(pos - self.initPos) - np.linalg.norm(self.targetPos - pos) - 10*majorBoundBreach - 2*minorBoundBreach
+        return 0.5*np.linalg.norm(pos - self.initPos) - 2*np.linalg.norm(self.targetPos - pos) - 10*majorBoundBreach - 2*minorBoundBreach
 
 
     def _computeOffsetToClosestObstacle(self):
@@ -309,7 +309,7 @@ class ObstacleAviary(BaseSingleAgentAviary):
         pos = state[:3]
 
         if self.episodeLength != -1 and self.episodeStepCount >= self.episodeLength:
-            return {'success': False}
+            return {'success': False, 'reason': "outOfTime"}
 
         if np.linalg.norm(self.targetPos - pos) < 0.1:
             return {'success': True}
@@ -317,7 +317,7 @@ class ObstacleAviary(BaseSingleAgentAviary):
         offsetToClosestObstacle = self._computeOffsetToClosestObstacle()
 
         if np.linalg.norm(offsetToClosestObstacle) <= ObstacleAviary.COLLISION_BOUND_RADIUS:
-            return {'success': False}
+            return {'success': False, 'reason': "collision"}
 
         return {}
 

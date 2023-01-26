@@ -3,6 +3,7 @@ sys.path.append("..")
 
 import os
 import argparse
+import numpy as np
 from envs.utils.EnvBuilder import EnvBuilder
 from stable_baselines3 import PPO
 from tqdm import tqdm
@@ -25,6 +26,8 @@ totalTrials = args.trails
 successfulTrials = 0
 rewards = []
 durations = []
+nCollisions = 0
+incompleteDistances = []
 for i in tqdm(range(totalTrials)):
 
     done = False
@@ -39,11 +42,17 @@ for i in tqdm(range(totalTrials)):
 
     if info['success']:
         successfulTrials += 1
+    if info['reason'] == "collision":
+        nCollisions +=1
+    else:
+        incompleteDistances.append(np.linalg.norm(obs[:(obs.shape[0]//2)]))
     
     rewards.append(episodeReward)
     durations.append(episodeDuration)
 
 env.close()
+
+
 
 
 print(f"---------------------------------------------------------")

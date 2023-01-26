@@ -1,6 +1,6 @@
 # Experiment Logs
 
-## Experiment 1
+## [Experiment 1](./experimentConfigs/experiment1.json)
 
 Train without noise and denoiser. Evaluate without noise and denoiser.
 ### Train Parameters
@@ -18,7 +18,7 @@ Train without noise and denoiser. Evaluate without noise and denoiser.
 *TBD*
 
 ---
-## Experiment 2A
+## [Experiment 2A](./experimentConfigs/experiment2a.json)
 
 Train without noise and denoiser. Evaluate with noise (0.01) but no denoiser.
 ### Train Parameters
@@ -36,7 +36,7 @@ Train without noise and denoiser. Evaluate with noise (0.01) but no denoiser.
 *TBD*
 
 ---
-## Experiment 2B
+## [Experiment 2B](./experimentConfigs/experiment2b.json)
 
 Train without noise and denoiser. Evaluate with noise (0.05) but no denoiser.
 ### Train Parameters
@@ -54,7 +54,7 @@ Train without noise and denoiser. Evaluate with noise (0.05) but no denoiser.
 *TBD*
 
 ---
-## Experiment 2C
+## [Experiment 2C](./experimentConfigs/experiment2c.json)
 
 Train without noise and denoiser. Evaluate with noise (0.1) but no denoiser.
 ### Train Parameters
@@ -73,7 +73,7 @@ Train without noise and denoiser. Evaluate with noise (0.1) but no denoiser.
 
 ---
 
-## Experiment 3A
+## [Experiment 3A](./experimentConfigs/experiment3a.json)
 
 Train without noise and denoiser. Evaluate with both noise (0.01) and denoiser(LPF).
 ### Train Parameters
@@ -92,7 +92,7 @@ Train without noise and denoiser. Evaluate with both noise (0.01) and denoiser(L
 
 ---
 
-## Experiment 3B
+## Ex[periment 3B](./experimentConfigs/experiment3b.json)
 
 Train without noise and denoiser. Evaluate with both noise (0.05) and denoiser (LPF).
 ### Train Parameters
@@ -111,7 +111,7 @@ Train without noise and denoiser. Evaluate with both noise (0.05) and denoiser (
 
 ---
 
-## Experiment 3C
+## [Experiment 3C]((./experimentConfigs/experiment3c.json))
 
 Train without noise and denoiser. Evaluate with both noise (0.1) and denoiser (LPF).
 ### Train Parameters
@@ -130,7 +130,7 @@ Train without noise and denoiser. Evaluate with both noise (0.1) and denoiser (L
 
 ---
 
-## Experiment 3D
+## [Experiment 3D]((./experimentConfigs/experiment3d.json))
 
 Train without noise and denoiser. Evaluate with both noise (0.01) and denoiser (KF).
 ### Train Parameters
@@ -149,7 +149,7 @@ Train without noise and denoiser. Evaluate with both noise (0.01) and denoiser (
 
 ---
 
-## Experiment 3E
+## [Experiment 3E](./experimentConfigs/experiment3e.json)
 
 Train without noise and denoiser. Evaluate with both noise (0.05) and denoiser (KF).
 ### Train Parameters
@@ -168,7 +168,7 @@ Train without noise and denoiser. Evaluate with both noise (0.05) and denoiser (
 
 ---
 
-## Experiment 3F
+## [Experiment 3F](./experimentConfigs/experiment3f.json)
 
 Train without noise and denoiser. Evaluate with both noise (0.1) and denoiser (KF).
 ### Train Parameters
@@ -187,7 +187,7 @@ Train without noise and denoiser. Evaluate with both noise (0.1) and denoiser (K
 
 ---
 
-## Experiment 4A
+## [Experiment 4A](./experimentConfigs/experiment4a.json)
 
 Train with noise (0.01) but no denoiser. Evaluate with noise (0.01) but no denoiser.
 ### Train Parameters
@@ -206,7 +206,7 @@ Train with noise (0.01) but no denoiser. Evaluate with noise (0.01) but no denoi
 
 ---
 
-## Experiment 4B
+## [Experiment 4B](./experimentConfigs/experiment4b.json)
 
 Train with noise (0.05) but no denoiser. Evaluate with noise (0.05) but no denoiser.
 ### Train Parameters
@@ -225,7 +225,7 @@ Train with noise (0.05) but no denoiser. Evaluate with noise (0.05) but no denoi
 
 ---
 
-## Experiment 4C
+## [Experiment 4C](./experimentConfigs/experiment4c.json)
 
 Train with noise (0.1) but no denoiser. Evaluate with noise (0.1) but no denoiser.
 ### Train Parameters
@@ -244,7 +244,7 @@ Train with noise (0.1) but no denoiser. Evaluate with noise (0.1) but no denoise
 
 ---
 
-## Experiment 5A
+## [Experiment 5A](./experimentConfigs/experiment5a.json)
 
 Train with both noise (0.01) and denoiser (LPF). Evaluate with both noise (0.01) and denoiser (LPF).
 
@@ -262,7 +262,7 @@ Train with both noise (0.01) and denoiser (LPF). Evaluate with both noise (0.01)
 
 ---
 
-## Experiment 5B
+## [Experiment 5B](./experimentConfigs/experiment5b.json)
 
 Train with both noise (0.05) and denoiser (LPF). Evaluate with both noise (0.05) and denoiser (LPF).
 
@@ -280,7 +280,7 @@ Train with both noise (0.05) and denoiser (LPF). Evaluate with both noise (0.05)
 
 ---
 
-## Experiment 5C
+## [Experiment 5C](./experimentConfigs/experiment5c.json)
 
 Train with both noise (0.1) and denoiser (LPF). Evaluate with both noise (0.1) and denoiser (LPF).
 
@@ -298,7 +298,7 @@ Train with both noise (0.1) and denoiser (LPF). Evaluate with both noise (0.1) a
 
 ---
 
-## Experiment 5D
+## [Experiment 5D](./experimentConfigs/experiment5d.json)
 
 Train with both noise (0.01) and denoiser (KF). Evaluate with both noise (0.01) and denoiser (KF).
 
@@ -316,7 +316,7 @@ Train with both noise (0.01) and denoiser (KF). Evaluate with both noise (0.01) 
 
 ---
 
-## Experiment 5E
+## [Experiment 5E](./experimentConfigs/experiment5e.json)
 
 Train with both noise (0.05) and denoiser (KF). Evaluate with both noise (0.05) and denoiser (KF).
 
@@ -334,7 +334,7 @@ Train with both noise (0.05) and denoiser (KF). Evaluate with both noise (0.05) 
 
 ---
 
-## Experiment 5F
+## [Experiment 5F](./experimentConfigs/experiment5f.json)
 
 Train with both noise (0.1) and denoiser (KF). Evaluate with both noise (0.1) and denoiser (KF).
 

@@ -1,0 +1,11 @@
+{
+    "name": "experiment5f",
+    "trainParameters": {
+        "config": "v3_0.1_kf.json",
+        "outputModelName": "base/model3_0.1_kf"
+    },
+    "evaluationParameters": {
+        "config": "v3_0.1_kf.json",
+        "inputModelName": "base/model3_0.1_kf"
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "name": "experiment5c",
+    "trainParameters": {
+        "config": "v3_0.1_lpf.json",
+        "outputModelName": "base/model3_0.1_lpf"
+    },
+    "evaluationParameters": {
+        "config": "v3_0.1_lpf.json",
+        "inputModelName": "base/model3_0.1_lpf"
+    }
+}

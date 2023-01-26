@@ -1,0 +1,11 @@
+{
+    "name": "experiment2c",
+    "trainParameters": {
+        "config": "v1.json",
+        "outputModelName": "base/model1"
+    },
+    "evaluationParameters": {
+        "config": "v2_0.1.json",
+        "inputModelName": "base/model1"
+    }
+}

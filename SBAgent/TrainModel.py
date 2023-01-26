@@ -18,14 +18,16 @@ configFileName = args.configFileName
 modelName = args.outputModelName
 n_steps = args.steps
 
+assert modelName.startswith('base') or modelName.startswith('finetuned'), "Model name must include base/finetuned"
+
 env = EnvBuilder.buildEnvFromConfig(os.path.join('..', 'configs', configFileName), gui=False)
 
 checkpoint_callback = CheckpointCallback(
   save_freq=1000000,
-  save_path="logs",
-  name_prefix=f"{modelName}",
+  save_path=os.path.join("checkpoints", modelName),
+  name_prefix=f"chkpt",
 )
 
-agent = PPO('MlpPolicy', env, verbose=1)
-agent.learn(n_steps, callback=checkpoint_callback)
+agent = PPO('MlpPolicy', env, verbose=1, tensorboard_log=os.path.join('logs', modelName))
+agent.learn(n_steps, callback=checkpoint_callback, tb_log_name="train_logs")
 agent.save(os.path.join('models', modelName))
