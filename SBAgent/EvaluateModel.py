@@ -7,22 +7,23 @@ import numpy as np
 from envs.utils.EnvBuilder import EnvBuilder
 from stable_baselines3 import PPO
 from tqdm import tqdm
+from tabulate import tabulate
 
 parser = argparse.ArgumentParser()
 parser.add_argument("configFileName", help="Name of the environment config file.", type=str)
-parser.add_argument("inputModelName", help="(base|finetuned + )Name of the model to load.", type=str)
-parser.add_argument("--trials", default=100, help="Number of episodes to evaluate for.", type=int)
-parser.add_argument("--gui", action=argparse.BooleanOptionalAction, help="Whether or not to show GUI")
-
+parser.add_argument("inputModelPath", help="Path to model to evaluate", type=str)
+parser.add_argument("-t", "--trials", default=100, help="Number of episodes to evaluate for.", type=int)
+parser.add_argument('--gui', action='store_true', help='Enable GUI')
+parser.add_argument('--no-gui', action='store_false', dest='gui', help='Disable GUI')
 args = parser.parse_args()
 
 configFileName = args.configFileName
-modelName = args.outputModelName
+modelName = args.inputModelPath
 
 env = EnvBuilder.buildEnvFromConfig(os.path.join('..', 'configs', configFileName), gui=args.gui)
-agent = PPO.load(os.path.join('models', modelName))
+agent = PPO.load(modelName)
 
-totalTrials = args.trails
+totalTrials = args.trials
 successfulTrials = 0
 rewards = []
 durations = []
@@ -42,7 +43,7 @@ for i in tqdm(range(totalTrials)):
 
     if info['success']:
         successfulTrials += 1
-    if info['reason'] == "collision":
+    elif info['reason'] == "collision":
         nCollisions +=1
     else:
         incompleteDistances.append(np.linalg.norm(obs[:(obs.shape[0]//2)]))
@@ -52,17 +53,13 @@ for i in tqdm(range(totalTrials)):
 
 env.close()
 
+evaluationResults = {
+    'Success Rate': f"{successfulTrials/totalTrials * 100:.2f}%",
+    'Collision Rate': f"{nCollisions/totalTrials * 100:.2f}%",
+    'Mean Incompletion Distance': f"{sum(incompleteDistances)/len(incompleteDistances):.2f}m" if len(incompleteDistances) > 0 else "N/A",
+    'Mean Reward': f"{sum(rewards)/len(rewards):.2f}",
+    'Mean Episode Length': f"{sum(durations)/len(durations)}"
+}
 
-
-
-print(f"---------------------------------------------------------")
-print(f"EVALUATION STATISTICS")
-print()
-print(f"Success Rate: {successfulTrials/totalTrials * 100:.2f}%")
-print(f"Mean Reward: {sum(rewards)/len(rewards):.2f}")
-print(f"Minimum Reward: {min(rewards):.2f}")
-print(f"Maximium Reward: {max(rewards):.2f}")
-print(f"Mean Episode Duration: {sum(durations)/len(durations):.2f} steps")
-print(f"Shortest Episode: {min(durations)} steps")
-print(f"Longest Episode: {max(durations)} steps")
-print(f"---------------------------------------------------------")
+evaluationTable = [[k, v] for k,v in evaluationResults.items()]
+print(tabulate(evaluationTable, headers=["Metric", "Value"], tablefmt='github'))

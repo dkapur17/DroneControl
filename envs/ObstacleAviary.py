@@ -13,7 +13,7 @@ class ObstacleAviary(BaseSingleAgentAviary):
 
     CLOSE_TO_FINISH_REWARD = 5
     SUCCESS_REWARD = 1000
-    COLLISION_PENALTY = -100
+    COLLISION_PENALTY = -1000
 
     SUCCESS_EPSILON = 0.1
 
@@ -226,8 +226,8 @@ class ObstacleAviary(BaseSingleAgentAviary):
         if np.linalg.norm(self.targetPos - pos) < ObstacleAviary.SUCCESS_EPSILON:
             return ObstacleAviary.SUCCESS_REWARD
         
-        if np.linalg.norm(self.targetPos - pos) < ObstacleAviary.MINOR_SAFETY_BOUND_RADIUS:
-            return ObstacleAviary.CLOSE_TO_FINISH_REWARD
+        # if np.linalg.norm(self.targetPos - pos) < ObstacleAviary.MINOR_SAFETY_BOUND_RADIUS:
+        #     return ObstacleAviary.CLOSE_TO_FINISH_REWARD
 
         offsetToClosestObstacle = self._computeOffsetToClosestObstacle()
         
@@ -239,7 +239,8 @@ class ObstacleAviary(BaseSingleAgentAviary):
         majorBoundBreach = distToClosestObstacle < ObstacleAviary.MAJOR_SAFETY_BOUND_RADIUS
         minorBoundBreach = distToClosestObstacle < ObstacleAviary.MINOR_SAFETY_BOUND_RADIUS
 
-        return 0.5*np.linalg.norm(pos - self.initPos) - 2*np.linalg.norm(self.targetPos - pos) - 10*majorBoundBreach - 2*minorBoundBreach
+        # return 0.5*np.linalg.norm(pos - self.initPos) -*np.linalg.norm(self.targetPos - pos) - 10*majorBoundBreach - 2*minorBoundBreach
+        return -2*np.linalg.norm(self.targetPos - pos) - 1*majorBoundBreach - 0.1*minorBoundBreach
 
 
     def _computeOffsetToClosestObstacle(self):

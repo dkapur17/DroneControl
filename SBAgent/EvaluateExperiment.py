@@ -5,6 +5,7 @@ import os
 import argparse
 import json
 import numpy as np
+import random
 from envs.utils.EnvBuilder import EnvBuilder
 from stable_baselines3 import PPO
 from tqdm import tqdm
@@ -18,6 +19,9 @@ parser.add_argument('--no-gui', action='store_false', dest='gui', help='Disable 
 args = parser.parse_args()
 
 
+np.random.seed(42)
+random.seed(42)
+
 with open(args.experimentConfigFile, 'r') as f:
     experimentConfig = json.load(f)
 
@@ -28,7 +32,7 @@ modelName = experimentConfig["trainParameters"]["outputModelName"]
 print(f"Running Evaluation on {experimentName}")
 
 env = EnvBuilder.buildEnvFromConfig(os.path.join('..', 'configs', configFileName), gui=args.gui)
-agent = PPO.load(os.path.join('models', modelName))
+agent = PPO.load(os.path.join('models', modelName, 'best_model'))
 
 totalTrials = args.trials
 successfulTrials = 0

@@ -4,7 +4,7 @@ sys.path.append("..")
 import os
 import argparse
 from stable_baselines3 import PPO
-from stable_baselines3.common.callbacks import CheckpointCallback
+from stable_baselines3.common.callbacks import EvalCallback
 from envs.utils.EnvBuilder import EnvBuilder
 
 
@@ -22,12 +22,11 @@ assert modelName.startswith('base') or modelName.startswith('finetuned'), "Model
 
 env = EnvBuilder.buildEnvFromConfig(os.path.join('..', 'configs', configFileName), gui=False)
 
-checkpoint_callback = CheckpointCallback(
-  save_freq=1000000,
-  save_path=os.path.join("checkpoints", modelName),
-  name_prefix=f"chkpt",
-)
+eval_callback = EvalCallback(env, best_model_save_path=os.path.join('models', modelName), 
+                                log_path=os.path.join('sbEvalLogs', modelName), 
+                                eval_freq=100_000, deterministic=True, render=False)
 
-agent = PPO('MlpPolicy', env, verbose=1, tensorboard_log=os.path.join('logs', modelName))
-agent.learn(n_steps, callback=checkpoint_callback, tb_log_name="train_logs")
-agent.save(os.path.join('models', modelName))
+agent = PPO("MlpPolicy", env, verbose=1, tensorboard_log=os.path.join('logs', modelName))
+agent.learn(n_steps, callback=eval_callback, tb_log_name="train_logs")
+
+
