@@ -15,7 +15,14 @@ Train without noise and denoiser. Evaluate without noise and denoiser.
 * Input Model: [`base/model1`](./SBAgent/models/base/model1.zip)
 
 #### Evaluation Results
-*TBD*
+
+| Metric                     | Value   |
+|----------------------------|---------|
+| Success Rate               | 73.50%  |
+| Collision Rate             | 26.50%  |
+| Mean Incompletion Distance | N/A     |
+| Mean Reward                | -20.25  |
+| Mean Episode Length        | 261.744 |
 
 ---
 ## [Experiment 2A](./experimentConfigs/experiment2a.json)
@@ -33,7 +40,14 @@ Train without noise and denoiser. Evaluate with noise (0.01) but no denoiser.
 * Input Model: [`base/model1`](./SBAgent/models/base/model1.zip)
 
 #### Evaluation Results
-*TBD*
+
+| Metric                     | Value   |
+|----------------------------|---------|
+| Success Rate               | 69.90%  |
+| Collision Rate             | 30.10%  |
+| Mean Incompletion Distance | N/A     |
+| Mean Reward                | -86.17  |
+| Mean Episode Length        | 257.42  |
 
 ---
 ## [Experiment 2B](./experimentConfigs/experiment2b.json)
@@ -51,7 +65,14 @@ Train without noise and denoiser. Evaluate with noise (0.05) but no denoiser.
 * Input Model: [`base/model1`](./SBAgent/models/base/model1.zip)
 
 #### Evaluation Results
-*TBD*
+
+| Metric                     | Value   |
+|----------------------------|---------|
+| Success Rate               | 71.30%  |
+| Collision Rate             | 28.70%  |
+| Mean Incompletion Distance | N/A     |
+| Mean Reward                | -65.85  |
+| Mean Episode Length        | 262.001 |
 
 ---
 ## [Experiment 2C](./experimentConfigs/experiment2c.json)
@@ -69,7 +90,14 @@ Train without noise and denoiser. Evaluate with noise (0.1) but no denoiser.
 * Input Model: [`base/model1`](./SBAgent/models/base/model1.zip)
 
 #### Evaluation Results
-*TBD*
+
+| Metric                     | Value   |
+|----------------------------|---------|
+| Success Rate               | 71.00%  |
+| Collision Rate             | 29.00%  |
+| Mean Incompletion Distance | N/A     |
+| Mean Reward                | -66.10  |
+| Mean Episode Length        | 258.97  |
 
 ---
 
@@ -88,11 +116,18 @@ Train without noise and denoiser. Evaluate with both noise (0.01) and denoiser(L
 * Input Model: [`base/model1`](./SBAgent/models/base/model1.zip)
 
 #### Evaluation Results
-*TBD*
+
+| Metric                     | Value   |
+|----------------------------|---------|
+| Success Rate               | 67.70%  |
+| Collision Rate             | 32.30%  |
+| Mean Incompletion Distance | N/A     |
+| Mean Reward                | -133.16 |
+| Mean Episode Length        | 257.793 |
 
 ---
 
-## Ex[periment 3B](./experimentConfigs/experiment3b.json)
+## [Experiment 3B](./experimentConfigs/experiment3b.json)
 
 Train without noise and denoiser. Evaluate with both noise (0.05) and denoiser (LPF).
 ### Train Parameters
@@ -107,7 +142,14 @@ Train without noise and denoiser. Evaluate with both noise (0.05) and denoiser (
 * Input Model: [`base/model1`](./SBAgent/models/base/model1.zip)
 
 #### Evaluation Results
-*TBD*
+
+| Metric                     | Value   |
+|----------------------------|---------|
+| Success Rate               | 70.80%  |
+| Collision Rate             | 29.20%  |
+| Mean Incompletion Distance | N/A     |
+| Mean Reward                | -74.76  |
+| Mean Episode Length        | 260.713 |
 
 ---
 
@@ -126,7 +168,14 @@ Train without noise and denoiser. Evaluate with both noise (0.1) and denoiser (L
 * Input Model: [`base/model1`](./SBAgent/models/base/model1.zip)
 
 #### Evaluation Results
-*TBD*
+
+| Metric                     | Value   |
+|----------------------------|---------|
+| Success Rate               | 69.90%  |
+| Collision Rate             | 30.10%  |
+| Mean Incompletion Distance | N/A     |
+| Mean Reward                | -95.42  |
+| Mean Episode Length        | 262.544 |
 
 ---
 
@@ -145,7 +194,14 @@ Train without noise and denoiser. Evaluate with both noise (0.01) and denoiser (
 * Input Model: [`base/model1`](./SBAgent/models/base/model1.zip)
 
 #### Evaluation Results
-*TBD*
+
+| Metric                     | Value   |
+|----------------------------|---------|
+| Success Rate               | 71.40%  |
+| Collision Rate             | 28.60%  |
+| Mean Incompletion Distance | N/A     |
+| Mean Reward                | -63.36  |
+| Mean Episode Length        | 262.162 |
 
 ---
 
@@ -164,7 +220,14 @@ Train without noise and denoiser. Evaluate with both noise (0.05) and denoiser (
 * Input Model: [`base/model1`](./SBAgent/models/base/model1.zip)
 
 #### Evaluation Results
-*TBD*
+
+| Metric                     | Value   |
+|----------------------------|---------|
+| Success Rate               | 70.10%  |
+| Collision Rate             | 29.90%  |
+| Mean Incompletion Distance | N/A     |
+| Mean Reward                | -79.07  |
+| Mean Episode Length        | 256.643 |
 
 ---
 
@@ -183,7 +246,14 @@ Train without noise and denoiser. Evaluate with both noise (0.1) and denoiser (K
 * Input Model: [`base/model1`](./SBAgent/models/base/model1.zip)
 
 #### Evaluation Results
-*TBD*
+
+| Metric                     | Value   |
+|----------------------------|---------|
+| Success Rate               | 68.60%  |
+| Collision Rate             | 31.40%  |
+| Mean Incompletion Distance | N/A     |
+| Mean Reward                | -108.65 |
+| Mean Episode Length        | 254.936 |
 
 ---
 
@@ -202,7 +272,14 @@ Train with noise (0.01) but no denoiser. Evaluate with noise (0.01) but no denoi
 * Input Model: [`base/model2_0.01`](./SBAgent/models/base/model2_0.01.zip)
 
 #### Evaluation Results
-*TBD*
+
+| Metric                     | Value   |
+|----------------------------|---------|
+| Success Rate               | 68.80%  |
+| Collision Rate             | 31.20%  |
+| Mean Incompletion Distance | N/A     |
+| Mean Reward                | -114.47 |
+| Mean Episode Length        | 258.475 |
 
 ---
 
@@ -221,7 +298,14 @@ Train with noise (0.05) but no denoiser. Evaluate with noise (0.05) but no denoi
 * Input Model: [`base/model2_0.05`](./SBAgent/models/base/model2_0.05.zip)
 
 #### Evaluation Results
-*TBD*
+
+| Metric                     | Value   |
+|----------------------------|---------|
+| Success Rate               | 69.90%  |
+| Collision Rate             | 30.10%  |
+| Mean Incompletion Distance | N/A     |
+| Mean Reward                | -120.60 |
+| Mean Episode Length        | 278.681 |
 
 ---
 
@@ -239,8 +323,14 @@ Train with noise (0.1) but no denoiser. Evaluate with noise (0.1) but no denoise
 * Environment Config: [`v2_0.1.json`](./configs/v2_0.1.json)
 * Input Model: [`base/model2_0.1`](./SBAgent/models/base/model2_0.1.zip)
 
-#### Evaluation Results
-*TBD*
+
+| Metric                     | Value   |
+|----------------------------|---------|
+| Success Rate               | 67.20%  |
+| Collision Rate             | 32.80%  |
+| Mean Incompletion Distance | N/A     |
+| Mean Reward                | -183.71 |
+| Mean Episode Length        | 284.602 |
 
 ---
 

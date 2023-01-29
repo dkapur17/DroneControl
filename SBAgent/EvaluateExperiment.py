@@ -18,7 +18,6 @@ parser.add_argument('--gui', action='store_true', help='Enable GUI')
 parser.add_argument('--no-gui', action='store_false', dest='gui', help='Disable GUI')
 args = parser.parse_args()
 
-
 np.random.seed(42)
 random.seed(42)
 
@@ -26,12 +25,22 @@ with open(args.experimentConfigFile, 'r') as f:
     experimentConfig = json.load(f)
 
 experimentName = experimentConfig["name"]
-configFileName = experimentConfig["trainParameters"]["config"]
-modelName = experimentConfig["trainParameters"]["outputModelName"]
+trainEnvConfig = experimentConfig["trainParameters"]["config"]
+evaluationEnvConfig = experimentConfig["evaluationParameters"]["config"]
+modelName = experimentConfig["evaluationParameters"]["inputModelName"]
 
 print(f"Running Evaluation on {experimentName}")
 
-env = EnvBuilder.buildEnvFromConfig(os.path.join('..', 'configs', configFileName), gui=args.gui)
+trainEnv = EnvBuilder.buildEnvFromConfig(os.path.join('..', 'configs', trainEnvConfig), gui=False)
+print("Model trained on")
+print(trainEnv)
+trainEnv.close()
+del trainEnv
+
+print("Evaluating Model on")
+env = EnvBuilder.buildEnvFromConfig(os.path.join('..', 'configs', evaluationEnvConfig), gui=args.gui)
+print(env)
+
 agent = PPO.load(os.path.join('models', modelName, 'best_model'))
 
 totalTrials = args.trials
@@ -73,4 +82,5 @@ evaluationResults = {
 }
 
 evaluationTable = [[k, v] for k,v in evaluationResults.items()]
+print()
 print(tabulate(evaluationTable, headers=["Metric", "Value"], tablefmt='github'))

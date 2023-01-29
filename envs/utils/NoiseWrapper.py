@@ -1,18 +1,22 @@
 import numpy as np
 import gym
 from typing import Union, Tuple
+from tabulate import tabulate
 
 from .DenoiseEngines import LPFDenoiseEngine, KFDenoiseEngine
 from ..ObstacleAviary import ObstacleAviary
 
 class GaussianNoiseGenerator:
 
-    def __init__(self, mu=0, sigma=1):
+    def __init__(self, mu=0, sigma=1) -> None:
         self.mu = mu
         self.sigma = sigma
 
-    def generateNoise(self, size=None):
+    def generateNoise(self, size=None) -> np.ndarray:
         return np.random.normal(self.mu, self.sigma, size=size)
+
+    def __str__(self) -> str:
+        return f"~N({self.mu, self.sigma})"
 
 class NoiseWrapper(gym.Wrapper):
 
@@ -79,3 +83,18 @@ class NoiseWrapper(gym.Wrapper):
         
         return obs
         
+
+    def __str__(self) -> str:
+        if self.env.randomizeObstaclesEveryEpisode:
+            obstacleDetails = f"Random Obstacles per Episode ~ U({self.env.minObstacles}, {self.env.maxObstacles})"
+        else:
+            obstacleDetails = ', '.join([f"({x}, {y}, {z})" for x,y,z in self.env.obstacles])
+        
+        envDetails = {
+            'Obstacles': obstacleDetails,
+            'Fixed Altitude': self.env.fixedAltitude,
+            'Noise': "None" if (self.noiseGenerator.mu, self.noiseGenerator.sigma) == (0, 0) else str(self.noiseGenerator), 
+            'Denoiser': str(self.denoiseEngine),
+        }
+
+        return tabulate([(k,v) for (k,v) in envDetails.items()], tablefmt='pretty')

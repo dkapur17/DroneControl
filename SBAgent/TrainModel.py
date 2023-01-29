@@ -28,5 +28,5 @@ eval_callback = EvalCallback(env, best_model_save_path=os.path.join('models', mo
 
 agent = PPO("MlpPolicy", env, verbose=1, tensorboard_log=os.path.join('logs', modelName))
 agent.learn(n_steps, callback=eval_callback, tb_log_name="train_logs")
-
+agent.save(os.path.join('models', modelName, 'final_model'))
 

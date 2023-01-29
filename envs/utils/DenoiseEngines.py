@@ -8,7 +8,9 @@ class LPFDenoiseEngine:
     def __init__(self, order:int, criticalFreq:float, ftype:str, freq:float) -> None:
         
         self.order = order
-        self.b, self.a = scipy.signal.iirfilter(order, criticalFreq, fs=freq, btype="low", ftype=ftype)
+        self.criticalFreq = criticalFreq
+        self.ftype = ftype
+        self.b, self.a = scipy.signal.iirfilter(self.order, self.criticalFreq, fs=freq, btype="low", ftype=self.ftype)
         
         self._xs = deque([], maxlen=len(self.b))
         self._ys = deque([], maxlen=len(self.a)-1)
@@ -42,11 +44,17 @@ class LPFDenoiseEngine:
         self.observedHistory.clear()
         self.denoisedHistory.clear()
 
+    def __str__(self) -> str:
+
+        return f"LPFDenoiseEngine({self.order}, {self.criticalFreq}, {self.ftype})"
+
 class KFDenoiseEngine:
 
     def __init__(self, measurementNoise:float, dt:float, fixedAltitude:bool, initPos:np.ndarray, processNoise:float=0) -> None:
 
         self.fixedAltitude = fixedAltitude
+        self.processNoise = processNoise
+        
         if self.fixedAltitude:
 
             # state = [x, y, vx, vy]
@@ -138,6 +146,8 @@ class KFDenoiseEngine:
             x0 = np.array([initPos[0], initPos[1], initPos[2], 0, 0, 0])
 
         self.initFilter(A, C, x0, P0, Q, R)
-        
+    
+    def __str__(self) -> str:
+        return f"KFDenoiseEngine({self.processNoise})"
 
         
