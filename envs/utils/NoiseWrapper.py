@@ -8,23 +8,36 @@ from ..ObstacleAviary import ObstacleAviary
 
 class GaussianNoiseGenerator:
 
-    def __init__(self, mu=0, sigma=1) -> None:
+    def __init__(self, mu=0, sigma=1, persistForSteps=10) -> None:
         self.mu = mu
         self.sigma = sigma
 
+        self.currNoise = None
+        self.currSteps = 0
+        self.persistForSteps = persistForSteps
+
     def generateNoise(self, size=None) -> np.ndarray:
-        return np.random.normal(self.mu, self.sigma, size=size)
+        
+        self.currSteps += 1
+        if self.currNoise is None:
+            self.currNoise = np.random.normal(self.mu, self.sigma, size=size)
+
+        if self.currSteps > self.persistForSteps:
+            self.currNoise = np.random.normal(self.mu, self.sigma, size=size)
+            self.currSteps = 0
+
+        return self.currNoise
 
     def __str__(self) -> str:
         return f"~N({self.mu, self.sigma})"
 
 class NoiseWrapper(gym.Wrapper):
 
-    def __init__(self, env:ObstacleAviary, mu:float, sigma:float, denoiseEngine:Union[None, LPFDenoiseEngine, KFDenoiseEngine]=None) -> None:
+    def __init__(self, env:ObstacleAviary, mu:float, sigma:float, persistForSteps:int, denoiseEngine:Union[None, LPFDenoiseEngine, KFDenoiseEngine]=None) -> None:
 
         super().__init__(env)
         self.denoiseEngine = denoiseEngine
-        self.noiseGenerator = GaussianNoiseGenerator(mu, sigma)
+        self.noiseGenerator = GaussianNoiseGenerator(mu, sigma, persistForSteps)
 
         self.observation_space = self.buildObservationSpace()
 

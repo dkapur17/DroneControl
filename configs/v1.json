@@ -19,6 +19,7 @@
         "noiseParameters": {
                 "mu": 0,
                 "sigma": 0,
+                "persistForSteps": 10,
                 "denoiseEngine": null
         }
 }
