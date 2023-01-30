@@ -89,6 +89,7 @@ To make an environment configuration, create a JSON in the `configs` directory o
     "noiseParameters": {
         "mu": float,
         "sigma": float,
+        "persistForSteps": int,
         "denoiseEngine": DenoiseEngineData
     }
 }
@@ -146,7 +147,7 @@ To use a Kalman Filter as the Denoise Engine, set `"denoiseEngine"` to the follo
 
 ## The Scripts
 
-### `TrainDispatcher.py`
+### [`TrainDispatcher.py`](./TrainDispatcher.py)
 
 Used to perform the train phase of a given experiment. To run it, run:
 
@@ -158,7 +159,7 @@ python TrainDispatcher.py [-h] [-s STEPS] [--local] experimentConfigFile
 * `-s` to specify the number of timesteps to train for. Defaults to 2,000,000.
 * Add the `--local` flag to run the training on your local machine. If this flag is omitted, the script generates a batch job configuration and dispatches it on one of the nodes on IIIT-H's HPC.
 
-### `SBAgent/EvaluateExperiment.py`
+### [`SBAgent/EvaluateExperiment.py`](./SBAgent/EvaluateExperiment.py)
 
 Used to perform the evaluation phase of a given experiment. To run it, run:
 
@@ -171,7 +172,7 @@ python EvaluateExperiment.py [-h] [-t TRIALS] [--gui] [--no-gui] experimentConfi
 * `-t` to specify the number of episodes used for evaluation. Defaults to 10.
 * `--gui` or `--no-gui` to specify whether or not to render the simulation. If no flag is provided, then GUI is NOT launched by default.
 
-### `SBAgent/EvaluateModel.py`
+### [`SBAgent/EvaluateModel.py`](./SBAgent/EvaluateModel.py)
 
 Used to evaluate a given model on a given environment. Allows flexibility outside of a defined experiment. To run it, run:
 
@@ -184,7 +185,7 @@ python EvaluateModel.py [-h] [-t TRIALS] [--gui] [--no-gui] configFileName input
 * `-t` to specify the number of episodes used for evaluation. Defaults to 10.
 * `--gui` or `--no-gui` to specify whether or not to render the simulation. If no flag is provided, then GUI is NOT launched by default.
 
-### `SBAgent/TrainModel.py`
+### [`SBAgent/TrainModel.py`](./SBAgent/TrainModel.py)
 
 Used to train a model on a given environment. Allows flexibity outside of a defined experiment. Used internally by `TrainDispatcher.py`.
 
