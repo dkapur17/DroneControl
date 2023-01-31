@@ -16,6 +16,7 @@ parser.add_argument("experimentConfigFile", help="Experiment Config File Path")
 parser.add_argument("-t", "--trials", type=int, default=10, help="Number of episodes to evaluate for.")
 parser.add_argument('--gui', action='store_true', help='Enable GUI')
 parser.add_argument('--no-gui', action='store_false', dest='gui', help='Disable GUI')
+parser.add_argument('--final', action='store_true', help="Use final version of the model instead of the best version of the model")
 args = parser.parse_args()
 
 np.random.seed(42)
@@ -37,11 +38,14 @@ print(trainEnv)
 trainEnv.close()
 del trainEnv
 
-print("Evaluating Model on")
 env = EnvBuilder.buildEnvFromConfig(os.path.join('..', 'configs', evaluationEnvConfig), gui=args.gui)
+print("Evaluating Model on")
 print(env)
 
-agent = PPO.load(os.path.join('models', modelName, 'best_model'))
+
+if args.final:
+    print("EVALUATING FINAL MODEL, NOT BEST MODEL!")
+agent = PPO.load(os.path.join('models', modelName, 'final_model' if args.final else 'best_model'))
 
 totalTrials = args.trials
 successfulTrials = 0
@@ -54,13 +58,14 @@ for i in tqdm(range(totalTrials)):
     done = False
     episodeReward = 0
     episodeDuration = 0
+    distToTarget = []
     obs = env.reset()
     while not done:
         episodeDuration += 1
         action, _ = agent.predict(obs, deterministic=True)
         obs, reward, done, info = env.step(action)
         episodeReward += reward
-
+        distToTarget.append(np.linalg.norm(obs[:(obs.shape[0]//2)]))
     if info['success']:
         successfulTrials += 1
     elif info['reason'] == "collision":

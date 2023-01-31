@@ -16,13 +16,24 @@ Train without noise and denoiser. Evaluate without noise and denoiser.
 
 #### Evaluation Results
 
+<!-- 
 | Metric                     | Value   |
 |----------------------------|---------|
 | Success Rate               | 73.50%  |
 | Collision Rate             | 26.50%  |
 | Mean Incompletion Distance | N/A     |
 | Mean Reward                | -20.25  |
-| Mean Episode Length        | 261.744 |
+| Mean Episode Length        | 261.744 | 
+-->
+
+
+| Metric                     | Value   |
+|----------------------------|---------|
+| Success Rate               | 71.50%  |
+| Collision Rate             | 28.50%  |
+| Mean Incompletion Distance | N/A     |
+| Mean Reward                | -50.37  |
+| Mean Episode Length        | 256.19  |
 
 ---
 ## [Experiment 2A](./experimentConfigs/experiment2a.json)
@@ -41,7 +52,13 @@ Train without noise and denoiser. Evaluate with noise (0.01) but no denoiser.
 
 #### Evaluation Results
 
-*TBD*
+| Metric                     | Value   |
+|----------------------------|---------|
+| Success Rate               | 71.00%  |
+| Collision Rate             | 29.00%  |
+| Mean Incompletion Distance | N/A     |
+| Mean Reward                | -67.18  |
+| Mean Episode Length        | 259.582 |
 
 ---
 ## [Experiment 2B](./experimentConfigs/experiment2b.json)
@@ -60,7 +77,13 @@ Train without noise and denoiser. Evaluate with noise (0.05) but no denoiser.
 
 #### Evaluation Results
 
-*TBD*
+| Metric                     | Value   |
+|----------------------------|---------|
+| Success Rate               | 70.20%  |
+| Collision Rate             | 29.80%  |
+| Mean Incompletion Distance | N/A     |
+| Mean Reward                | -83.37  |
+| Mean Episode Length        | 259.929 |
 
 ---
 ## [Experiment 2C](./experimentConfigs/experiment2c.json)
