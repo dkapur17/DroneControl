@@ -53,7 +53,7 @@ rewards = []
 durations = []
 nCollisions = 0
 incompleteDistances = []
-for i in tqdm(range(totalTrials)):
+for i in range(totalTrials):
 
     done = False
     episodeReward = 0
@@ -76,8 +76,11 @@ for i in tqdm(range(totalTrials)):
     rewards.append(episodeReward)
     durations.append(episodeDuration)
 
+    print(f"Trial {i+1}/{totalTrials}. Current Success Rate: {(successfulTrials/(i+1))*100:.2f}%       ", end="\r", flush=True)
+
 env.close()
 
+print()
 evaluationResults = {
     'Success Rate': f"{successfulTrials/totalTrials * 100:.2f}%",
     'Collision Rate': f"{nCollisions/totalTrials * 100:.2f}%",

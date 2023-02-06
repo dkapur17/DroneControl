@@ -8,36 +8,24 @@ from ..ObstacleAviary import ObstacleAviary
 
 class GaussianNoiseGenerator:
 
-    def __init__(self, mu=0, sigma=1, persistForSteps=10) -> None:
+    def __init__(self, mu=0, sigma=1) -> None:
         self.mu = mu
         self.sigma = sigma
 
-        self.currNoise = None
-        self.currSteps = 0
-        self.persistForSteps = persistForSteps
-
     def generateNoise(self, size=None) -> np.ndarray:
         
-        self.currSteps += 1
-        if self.currNoise is None:
-            self.currNoise = np.random.normal(self.mu, self.sigma, size=size)
-
-        if self.currSteps > self.persistForSteps:
-            self.currNoise = np.random.normal(self.mu, self.sigma, size=size)
-            self.currSteps = 0
-
-        return self.currNoise
+        return np.random.normal(self.mu, self.sigma, size=size)
 
     def __str__(self) -> str:
-        return f"~N({self.mu, self.sigma})"
+        return f"~N({self.mu}, {self.sigma})"
 
 class NoiseWrapper(gym.Wrapper):
 
-    def __init__(self, env:ObstacleAviary, mu:float, sigma:float, persistForSteps:int, denoiseEngine:Union[None, LPFDenoiseEngine, KFDenoiseEngine]=None) -> None:
+    def __init__(self, env:ObstacleAviary, mu:float, sigma:float, denoiseEngine:Union[None, LPFDenoiseEngine, KFDenoiseEngine]=None) -> None:
 
         super().__init__(env)
         self.denoiseEngine = denoiseEngine
-        self.noiseGenerator = GaussianNoiseGenerator(mu, sigma, persistForSteps)
+        self.noiseGenerator = GaussianNoiseGenerator(mu, sigma)
 
         self.observation_space = self.buildObservationSpace()
 
@@ -88,8 +76,14 @@ class NoiseWrapper(gym.Wrapper):
 
         obs = super().reset()
         
+        # Corrupting the initial observation
+        obs = self.corruptObservation(obs)
+
+        # Denoising the initial observation
         if self.denoiseEngine is not None:
             self.denoiseEngine.reset(self.env.initPos)
+            pos_dim = 2 if self.env.fixedAltitude else 3
+            obs[:pos_dim] = self.denoiseEngine(obs[:pos_dim].copy(), np.zeros(pos_dim))
 
         # Compute processed observation from raw observation
         obs = self.env._computeProcessedObservation(obs)

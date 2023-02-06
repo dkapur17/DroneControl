@@ -17,9 +17,8 @@
         "simFreq": 240,
         "controlFreq": 48,
         "noiseParameters": {
-                "mu": 0,
+                "mu": 0.1,
                 "sigma": 0.1,
-                "persistForSteps": 10,
                 "denoiseEngine": {
                         "method": "kf",
                         "parameters": {

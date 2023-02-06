@@ -51,6 +51,6 @@ class EnvBuilder:
         else:
             denoiseEngine = None
 
-        env = NoiseWrapper(innerEnv, noiseParameters.mu, noiseParameters.sigma, noiseParameters.persistForSteps, denoiseEngine)
+        env = NoiseWrapper(innerEnv, noiseParameters.mu, noiseParameters.sigma, denoiseEngine)
 
         return env
