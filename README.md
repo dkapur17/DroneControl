@@ -29,40 +29,6 @@ policy -->|Action| denoiseEngine
 policy -->|Action| step
 ```
 
-## Designing an Experiment
-
-An experiment has 2 parts:
-
-1. Training phase: Choose an environment config to train a new agent on, and choose a model name to save the agent as after training.
-
-2. Evaluation phase: Choose the model to evaluate, and the environment to evaluate it on. Notice that the environment that you evaluate the model on doesn't necessarily have to be the same as the one you trained it on.
-
-To make an experiment, make a new config JSON in the `experimentConfigs/` directory. It should have the following shape:
-
-```json
-{
-    "name": str,
-    "trainParameters": {
-        "config": str (Only the name of the config file. Must be in the configs directory),
-        "outputModelName": str (base/finetuned + name of model. Must be in the SBAgent/models directory.)
-    },
-    "evaluationParameters": {
-        "config": str (Only the name of the config file. Must be in the configs directory),
-        "inputModelName": str (base/finetuned + name of model. Must be in the SBAgent/models directory.)
-    }
-}
-```
-
-Check out [experiment1.json](./experimentConfigs/experiment1.json) for reference.
-
-From here, you do one of two things:
-
-1. Train Step: Run `TrainDispatcher.py` to the model on the given environment. The script is written to dispatch a batch job on IIIT-H's HPC cluster, or on your local machine with the `--local` flag.
-
-2. Evaluation Step: Run `SBAgent/EvaluateExperiment.py` to evaluate the model in the given environment.
-
-Both these scripts take the experiment config file location as an argument.
-
 ## Making an environment config
 
 To make an environment configuration, create a JSON in the `configs` directory of the following shape:
@@ -89,7 +55,6 @@ To make an environment configuration, create a JSON in the `configs` directory o
     "noiseParameters": {
         "mu": float,
         "sigma": float,
-        "persistForSteps": int,
         "denoiseEngine": DenoiseEngineData
     }
 }
@@ -144,46 +109,67 @@ To use a Kalman Filter as the Denoise Engine, set `"denoiseEngine"` to the follo
 
 * `processNoise`: Standard Deviation of the process noise.
 
+## Training a Model
+
+To train a model, you first need an environment in which it will be trained. For that, make the environment config file as shown above and place it in the `configs` directory. Then make a Training Configuration File of the following shape:
+
+```json
+{
+    "taskName": str,
+    "envConfigFile": str (path to file relative to configs/),
+    "outputModelName": str (model name relative to SBAgent/models/)
+}
+```
+
+Check out [trainConfigs/trainConfig1.json](trainConfigs/trainConfig1.json) to see an example.
+
+Once the train configuration file is prepared, use the `TrainDispatcher.py` script to train the model (usage explained below).
 
 ## The Scripts
 
 ### [`TrainDispatcher.py`](./TrainDispatcher.py)
 
-Used to perform the train phase of a given experiment. To run it, run:
+Used to train a model based on the given train config file.
 
 ```bash
-python TrainDispatcher.py [-h] [-s STEPS] [--local] experimentConfigFile
+python TrainDispatcher.py [-h] [-s STEPS] [--local] trainConfigPath
 ```
 
-* `experimentConfigFile` is path to the experiment configuration file.
+* `trainConfigPath` is the path to the train configuration file.
 * `-s` to specify the number of timesteps to train for. Defaults to 2,000,000.
 * Add the `--local` flag to run the training on your local machine. If this flag is omitted, the script generates a batch job configuration and dispatches it on one of the nodes on IIIT-H's HPC.
 
-### [`SBAgent/EvaluateExperiment.py`](./SBAgent/EvaluateExperiment.py)
-
-Used to perform the evaluation phase of a given experiment. To run it, run:
-
-```bash
-cd SBAgent
-python EvaluateExperiment.py [-h] [-t TRIALS] [--gui] [--no-gui] experimentConfigFile
-```
-
-* `experimentConfigFile` is path to the experiment configuration file
-* `-t` to specify the number of episodes used for evaluation. Defaults to 10.
-* `--gui` or `--no-gui` to specify whether or not to render the simulation. If no flag is provided, then GUI is NOT launched by default.
-
 ### [`SBAgent/EvaluateModel.py`](./SBAgent/EvaluateModel.py)
 
-Used to evaluate a given model on a given environment. Allows flexibility outside of a defined experiment. To run it, run:
+<!-- Used to evaluate a given model on a given environment. Allows flexibility outside of a defined experiment. To run it, run: -->
+
+Used to evaluate an existing model on an environment template. The template allows the user to set the noise parameters and denoiser to be used as arguments instead of having to create a new file for every possible combination of the three. To run it, run:
 
 ```bash
 cd SBAgent
-python EvaluateModel.py [-h] [-t TRIALS] [--gui] [--no-gui] configFileName inputModelPath
+python EvaluateModel.py [-h] [-t TRIALS] [--gui] [--no-gui] modelPath mu sigma {none,kf,lpf}
 ```
-* `configFileName` is the name of the environment configuration file inside the `config` directory.
-* `inputModelPath` is the path to the model to be evaluated.
-* `-t` to specify the number of episodes used for evaluation. Defaults to 10.
-* `--gui` or `--no-gui` to specify whether or not to render the simulation. If no flag is provided, then GUI is NOT launched by default.
+
+* `modelPath` is the relative path of the model to be evaluated.
+* `mu` is the mean of the noise to be injected into the state space.
+* `sigma` is the standard deviation of the noise to be injected into the state space.
+* `{none,kf,lpf}` are the choices for the denoiser to use.
+* `-t` to specify the number of episodes to evaluate the model for. Defaults to 10.
+* `--gui` to launch the PyBullet window to visualize the agent behavior.
+
+### [`SBAgent/EvaluationPipeline.py`](./SBAgent/EvaluateExperiment.py)
+
+Used to perform a series of model evaluations in a single call. Defined in the code is a set of values of $\mu$, $\sigma$ and which denoiser to use, and the file calls `EvaluateModel.py` on every combination of the three variables, and prints the results of the evaluation. To run it:
+
+```bash
+cd SBAgent
+python EvaluationPipeline.py [-h] [-t TRIALS] modelPath
+```
+
+* `modelPath` is path to the model to be evaluated.
+* `-t` is the number of episodes each evaluation is done for.
+
+*Though this script makes a call to `EvaluateModel`, it supresses all the print statements from that file to get a clean output. Only outputs are of the final evaluation results in table form.*
 
 ### [`SBAgent/TrainModel.py`](./SBAgent/TrainModel.py)
 
@@ -198,10 +184,6 @@ python TrainModel.py [-h] [-s STEPS] configFileName outputModelName
 * `configFileName` is the name of the environment configuration file inside the `config` directory.
 * `outputModelName` is the name to save the output model as. This must begin with either `base/` or `finetuned/` (for the current script it is should ideally always be `base/`) followed by the name of the model. The trained model is then saved in `SBAgent/models/<outputModelName>`.
 * `-s` to specify the number of timesteps to train for. Default is 2,000,000.
-
-## Evironment Configurations
-
-Check out [ConfigLogs.md](./configs/ConfigLogs.md) for the description for every environement.
 
 ## Models
 
