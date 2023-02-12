@@ -1,0 +1,5 @@
+{
+    "taskName": "train_0.1m_0s_none",
+    "envConfigFile": "specifics/0.1m_0s_none.json",
+    "outputModelName": "base/model3"
+}

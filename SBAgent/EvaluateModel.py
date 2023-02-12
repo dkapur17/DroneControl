@@ -12,11 +12,6 @@ from stable_baselines3 import PPO
 from tqdm import tqdm
 from tabulate import tabulate
 
-
-np.random.seed(42)
-random.seed(42)
-
-
 class NoStdStreams(object):
     def __init__(self,stdout = None, stderr = None):
         self.devnull = open(os.devnull,'w')
@@ -36,6 +31,9 @@ class NoStdStreams(object):
 
 
 def evaluate(mu, sigma, denoiser, modelPath, trials, gui=False, quiet=True):
+
+    np.random.seed(42)
+    random.seed(42)
 
     envFile = {
         'none': '../configs/NoDenoiserEnv.json',
