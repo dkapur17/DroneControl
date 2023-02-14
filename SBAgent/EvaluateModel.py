@@ -30,10 +30,9 @@ class NoStdStreams(object):
         self.devnull.close()
 
 
-def evaluate(mu, sigma, denoiser, modelPath, trials, gui=False, quiet=True):
+def evaluate(mu, sigma, denoiser, modelPath, trials, gui=False):
 
-    np.random.seed(42)
-    random.seed(42)
+    seeds = np.load('evalSeeds.npy').tolist()
 
     envFile = {
         'none': '../configs/NoDenoiserEnv.json',
@@ -66,6 +65,9 @@ def evaluate(mu, sigma, denoiser, modelPath, trials, gui=False, quiet=True):
     nCollisions = 0
     incompleteDistances = []
     for i in range(totalTrials):
+
+        np.random.seed(seeds[i])
+        random.seed(seeds[i])
 
         done = False
         episodeReward = 0

@@ -111,6 +111,7 @@ class KFDenoiseEngine:
         self.denoisedHistory = []
     
         self.initConditions = [A, C, P0, Q, R]
+        self.vdim = 2 if self.fixedAltitude else 3
 
     def __call__(self, X:np.ndarray, action:np.ndarray) -> np.ndarray:
         self.observedHistory.append(X)
@@ -120,6 +121,7 @@ class KFDenoiseEngine:
         
     def process(self, z:np.ndarray, u:np.ndarray) -> np.ndarray:
         observation = z
+        self.x_pred[self.vdim:] = u
         self.x_pred, self.P_pred = self.kf.filter_update(filtered_state_mean=self.x_pred, filtered_state_covariance=self.P_pred, observation=observation)
 
         return self.x_pred[:(2 if self.fixedAltitude else 3)].copy()

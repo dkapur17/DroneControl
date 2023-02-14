@@ -17,8 +17,8 @@ args = parser.parse_args()
 
 if args.method == "bivariate":
     mus = np.arange(0, 0.21, 0.02)
-    sigmas = np.arange(0, 2.0, 0.2)
-    denoisers = ['None']
+    sigmas = np.arange(0, 2.2, 0.2)
+    denoisers = ['LPF']
     print("# Bivariate Analysis")
 
 else:
@@ -34,7 +34,7 @@ for mu in mus:
             print(f"### $\mu = {mu}$ | $\sigma = {sigma}$ | Denoiser = `{denoiser}`\n")
             print(f"Evaluating {mu, sigma, denoiser}", file=sys.stderr)
             startTime = time.time()
-            evaluationTable = evaluate(mu, sigma, denoiser.lower(), args.modelPath, args.trials, False, True)
+            evaluationTable = evaluate(mu, sigma, denoiser.lower(), args.modelPath, args.trials, False)
             endTime = time.time()
             print(file=sys.stderr)
             print(f"Time Taken: {datetime.timedelta(seconds=endTime-startTime)}", file=sys.stderr)

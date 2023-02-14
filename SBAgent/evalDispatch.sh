@@ -5,7 +5,7 @@
 #SBATCH --time=4-00:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --mem=16G
-#SBATCH -o ../jobOutputs/multivariate_model2_output.txt
-#SBATCH --job-name=multivariate_model2
+#SBATCH -o ../jobOutputs/multivariate_model1_output.txt
+#SBATCH --job-name=multivariate_model1
 
-python EvaluationPipeline.py models/base/model2/best_model.zip multivariate -t 1000 > model2_multivariate.md
+python EvaluationPipeline.py models/base/model1/best_model.zip multivariate -t 1000 > model1_multivariate.md
