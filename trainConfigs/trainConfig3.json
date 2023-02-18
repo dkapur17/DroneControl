@@ -1,5 +1,5 @@
 {
-    "taskName": "train_0.1m_0s_none",
-    "envConfigFile": "specifics/0.1m_0s_none.json",
-    "outputModelName": "base/model3"
+    "taskName": "train_0m_0s_none_removed_vel_penalty",
+    "envConfigFile": "specifics/0m_0s_none.json",
+    "outputModelName": "base/model5"
 }

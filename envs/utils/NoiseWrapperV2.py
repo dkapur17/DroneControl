@@ -47,7 +47,51 @@ class NoiseWrapper(gym.Wrapper):
 
     def buildObservationSpace(self):
 
-        return self.env._observationSpace()
+        if not self.fixedAltitude:
+            obsLowerBound = np.array([0, #dxt
+                                        0, #dyt
+                                        0, #dzt
+                                        0, #dxo
+                                        0, #dyo
+                                        0, #dzo
+                                        -1, #vx
+                                        -1, #vy
+                                        -1, #vz
+                                        -1, #vmag
+                                        0]) #t
+
+            obsUpperBound = np.array([self.geoFence.xmax - self.geoFence.xmin, #dxt
+                                        self.geoFence.ymax - self.geoFence.ymin, #dyt
+                                        self.geoFence.zmax - self.geoFence.zmin, #dzt
+                                        self.geoFence.xmax - self.geoFence.xmin, #dxo
+                                        self.geoFence.ymax - self.geoFence.ymin, #dyo
+                                        self.geoFence.zmax - self.geoFence.zmin, #dzo
+                                        1,                                       #vx
+                                        1,                                       #vy
+                                        1,                                       #vz
+                                        1,                                       #vmag
+                                        self.episodeLength])                     #t
+            
+        else:
+            obsLowerBound = np.array([0, #dxt
+                                        0, #dyt
+                                        0, #dxo
+                                        0, #dyo
+                                        -1, #vx
+                                        -1, #vy
+                                        -1, #vmag
+                                        0]) #t
+
+            obsUpperBound = np.array([self.geoFence.xmax - self.geoFence.xmin, #dxt
+                                        self.geoFence.ymax - self.geoFence.ymin, #dyt
+                                        self.geoFence.xmax - self.geoFence.xmin, #dxo
+                                        self.geoFence.ymax - self.geoFence.ymin, #dyo
+                                        1,                                       #vx
+                                        1,                                       #vy
+                                        1,                                       #vmag
+                                        self.episodeLength])                     #t
+
+        return gym.spaces.Box(low=obsLowerBound, high=obsUpperBound, dtype=np.float32)
 
     def computeVelocityFromAction(self, action):
 

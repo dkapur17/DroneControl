@@ -21,6 +21,7 @@ class ObstacleAviary(BaseSingleAgentAviary):
     MAJOR_SAFETY_BOUND_RADIUS = 0.1 
     COLLISION_BOUND_RADIUS = 0.07
 
+    DISTANCE_PENALTY = 2
     MINOR_SAFETY_PENALTY = 1
     MAJOR_SAFETY_PENALTY = 10
 
@@ -100,15 +101,75 @@ class ObstacleAviary(BaseSingleAgentAviary):
 
         
         if self.returnRawObservations:
-            # [x y z xt yt zt xo yo zo]
-            # Get rid of z axis values for fixedAltitude
-            obsLowerBound = np.array([-np.inf] * (9 if self.fixedAltitude else 12))
-            obsUpperBound = np.array([np.inf] * (9 if self.fixedAltitude else 12))
+            
+            if not self.fixedAltitude:
+                obsLowerBound = np.array([self.geoFence.xmin, #x
+                                          self.geoFence.ymin, #y
+                                          self.geoFence.zmin, #z 
+                                          self.geoFence.xmin, #xt
+                                          self.geoFence.ymin, #yt
+                                          self.geoFence.zmin, #zt
+                                          self.geoFence.xmin, #xo
+                                          self.geoFence.ymin, #yo
+                                          self.geoFence.zmin, #zo
+                                        ])
+
+                obsUpperBound = np.array([self.geoFence.xmax, #x
+                                          self.geoFence.ymax, #y
+                                          self.geoFence.zmax, #z 
+                                          self.geoFence.xmax, #xt
+                                          self.geoFence.ymax, #yt
+                                          self.geoFence.zmax, #zt
+                                          self.geoFence.xmax, #xo
+                                          self.geoFence.ymax, #yo
+                                          self.geoFence.zmax, #zo
+                                        ])
+            else:
+                obsLowerBound = np.array([self.geoFence.xmin, #x
+                                          self.geoFence.ymin, #y
+                                          self.geoFence.xmin, #xt
+                                          self.geoFence.ymin, #yt
+                                          self.geoFence.xmin, #xo
+                                          self.geoFence.ymin, #yo
+                                        ])
+
+                obsUpperBound = np.array([self.geoFence.xmax, #x
+                                          self.geoFence.ymax, #y
+                                          self.geoFence.xmax, #xt
+                                          self.geoFence.ymax, #yt
+                                          self.geoFence.xmax, #xo
+                                          self.geoFence.ymax, #yo
+                                        ])
         else:
-            # [dxt dyt dzt dxo dyo dzo]
-            # Get rid of z axis values for fixedAltitude
-            obsLowerBound = np.array([-np.inf] * (6 if self.fixedAltitude else 9))
-            obsUpperBound = np.array([np.inf] * (6 if self.fixedAltitude else 9))
+            if not self.fixedAltitude:
+                obsLowerBound = np.array([self.geoFence.xmin - self.geoFence.xmax, #dxt
+                                          self.geoFence.ymin - self.geoFence.xmax, #dyt
+                                          self.geoFence.zmin - self.geoFence.zmax, #dzt
+                                          self.geoFence.xmin - self.geoFence.xmax, #dxo
+                                          self.geoFence.ymin - self.geoFence.ymax, #dyo
+                                          self.geoFence.zmin - self.geoFence.zmax, #dzo
+                                        ])
+
+                obsUpperBound = np.array([self.geoFence.xmax - self.geoFence.xmin, #dxt
+                                          self.geoFence.ymax - self.geoFence.ymin, #dyt
+                                          self.geoFence.zmax - self.geoFence.zmin, #dzt
+                                          self.geoFence.xmax - self.geoFence.xmin, #dxo
+                                          self.geoFence.ymax - self.geoFence.ymin, #dyo
+                                          self.geoFence.zmax - self.geoFence.zmin, #dzo
+                                        ])
+                
+            else:
+                obsLowerBound = np.array([self.geoFence.xmin - self.geoFence.xmax, #dxt
+                                          self.geoFence.ymin - self.geoFence.xmax, #dyt
+                                          self.geoFence.xmin - self.geoFence.xmax, #dxo
+                                          self.geoFence.ymin - self.geoFence.ymax, #dyo
+                                        ])
+                
+                obsUpperBound = np.array([self.geoFence.xmax - self.geoFence.xmin, #dxt
+                                          self.geoFence.ymax - self.geoFence.ymin, #dyt
+                                          self.geoFence.xmax - self.geoFence.xmin, #dxo
+                                          self.geoFence.ymax - self.geoFence.ymin, #dyo
+                                        ])
 
         return spaces.Box(low=obsLowerBound, high=obsUpperBound, dtype=np.float32)
 
@@ -123,7 +184,6 @@ class ObstacleAviary(BaseSingleAgentAviary):
 
         state = self._getDroneStateVector(0)
         pos = state[:3]
-        vel = state[10:13]
 
         offsetToTarget = self.targetPos - pos
         offsetToClosestObstacle = self._computeOffsetToClosestObstacle()
@@ -132,32 +192,29 @@ class ObstacleAviary(BaseSingleAgentAviary):
             pos = pos[:2]
             offsetToTarget = offsetToTarget[:2]
             offsetToClosestObstacle = offsetToClosestObstacle[:2]
-            vel = vel[:2]
 
         if self.returnRawObservations:
-            observation = np.concatenate([pos, pos + offsetToTarget, pos + offsetToClosestObstacle, vel])
+            observation = np.concatenate([pos, pos + offsetToTarget, pos + offsetToClosestObstacle])
         else:
-            observation = np.concatenate([offsetToTarget, offsetToClosestObstacle, vel])
+            observation = np.concatenate([offsetToTarget, offsetToClosestObstacle])
 
         return observation
 
     def _computeProcessedObservation(self, rawObservation):
 
         if self.fixedAltitude:
-            pos = rawObservation[:2]
+            pos = rawObservation[0:2]
             targetPos = rawObservation[2:4]
             closestObstaclePos = rawObservation[4:6]
-            vel = rawObservation[6:]
         else:
-            pos = rawObservation[:3]
+            pos = rawObservation[0:3]
             targetPos = rawObservation[3:6]
             closestObstaclePos = rawObservation[6:9]
-            vel = rawObservation[9:]
 
         offsetToTarget = targetPos - pos
         offsetToClosestObstacle = closestObstaclePos - pos
 
-        return np.concatenate([offsetToTarget, offsetToClosestObstacle, vel])
+        return np.concatenate([offsetToTarget, offsetToClosestObstacle])
         
 
     def reset(self):
@@ -219,7 +276,6 @@ class ObstacleAviary(BaseSingleAgentAviary):
 
         return super().step(action)
 
-
     def _computeReward(self):
 
         state = self._getDroneStateVector(0)
@@ -228,9 +284,6 @@ class ObstacleAviary(BaseSingleAgentAviary):
         if np.linalg.norm(self.targetPos - pos) < ObstacleAviary.SUCCESS_EPSILON:
             return ObstacleAviary.SUCCESS_REWARD
         
-        # if np.linalg.norm(self.targetPos - pos) < ObstacleAviary.MINOR_SAFETY_BOUND_RADIUS:
-        #     return ObstacleAviary.CLOSE_TO_FINISH_REWARD
-
         offsetToClosestObstacle = self._computeOffsetToClosestObstacle()
         
         distToClosestObstacle = np.linalg.norm(offsetToClosestObstacle)
@@ -241,9 +294,9 @@ class ObstacleAviary(BaseSingleAgentAviary):
         majorBoundBreach = distToClosestObstacle < ObstacleAviary.MAJOR_SAFETY_BOUND_RADIUS
         minorBoundBreach = distToClosestObstacle < ObstacleAviary.MINOR_SAFETY_BOUND_RADIUS
 
-        # return 0.5*np.linalg.norm(pos - self.initPos) -*np.linalg.norm(self.targetPos - pos) - 10*majorBoundBreach - 2*minorBoundBreach
-        return -2*np.linalg.norm(self.targetPos - pos) - ObstacleAviary.MAJOR_SAFETY_PENALTY*majorBoundBreach - ObstacleAviary.MINOR_SAFETY_PENALTY*minorBoundBreach
-
+        return  - ObstacleAviary.DISTANCE_PENALTY*np.linalg.norm(self.targetPos - pos) \
+                - ObstacleAviary.MAJOR_SAFETY_PENALTY*majorBoundBreach \
+                - ObstacleAviary.MINOR_SAFETY_PENALTY*minorBoundBreach
 
     def _computeOffsetToClosestObstacle(self):
 
@@ -264,16 +317,22 @@ class ObstacleAviary(BaseSingleAgentAviary):
                 obstacleOffset = min(obstacleOffset, offset, key=np.linalg.norm)
 
         # Check distance to boundaries
-        xBoundDist = x - self.geoFence.xmin
+        # xBoundDist = x - self.geoFence.xmin
+        xBoundDist = min(x - self.geoFence.xmin, self.geoFence.xmax - x)
         yBoundDist = min(y - self.geoFence.ymin, self.geoFence.ymax - y)
         zBoundDist = min(z - self.geoFence.zmin, self.geoFence.zmax - z) if not self.fixedAltitude else np.inf
         
 
         boundDists = [xBoundDist, yBoundDist, zBoundDist]
 
-        if xBoundDist == min(boundDists):
-            fenceOffset = np.array([-(x - self.geoFence.xmin), 0, 0])
+        # if xBoundDist == min(boundDists):
+        #     fenceOffset = np.array([-(x - self.geoFence.xmin), 0, 0])
 
+        if xBoundDist == min(boundDists):
+            if x - self.geoFence.xmin < self.geoFence.xmax - x:
+                fenceOffset = np.array([-(x - self.geoFence.xmin), 0, 0])
+            else:
+                fenceOffset = np.array([(self.geoFence.xmax - x), 0, 0])
         elif yBoundDist == min(boundDists):
             if y - self.geoFence.ymin < self.geoFence.ymax - y:
                 fenceOffset = np.array([0, -(y - self.geoFence.ymin), 0])
