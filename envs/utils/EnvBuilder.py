@@ -2,8 +2,8 @@ import json
 from argparse import Namespace
 
 from .PositionConstraint import PositionConstraint
-from ..ObstacleAviaryV2 import ObstacleAviary
-from .NoiseWrapperV2 import NoiseWrapper
+from ..ObstacleAviary import ObstacleAviary
+from .NoiseWrapper import NoiseWrapper
 
 from .DenoiseEngines import LPFDenoiseEngine, KFDenoiseEngine
 

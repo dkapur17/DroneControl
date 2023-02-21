@@ -1,5 +1,5 @@
 {
-    "taskName": "train_0m_0s_none_back2basics",
+    "taskName": "train_4_1_5_start_assist",
     "envConfigFile": "specifics/0m_0s_none.json",
-    "outputModelName": "base/model2"
-}
+    "outputModelName": "base/model8"
+}   

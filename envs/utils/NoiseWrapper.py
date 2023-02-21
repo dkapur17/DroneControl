@@ -47,7 +47,26 @@ class NoiseWrapper(gym.Wrapper):
 
     def buildObservationSpace(self):
 
-        return self.env._observationSpace()
+        if not self.fixedAltitude:
+
+            obsUpperBound = np.array([self.geoFence.xmax - self.geoFence.xmin, #dxt
+                                        self.geoFence.ymax - self.geoFence.ymin, #dyt
+                                        self.geoFence.zmax - self.geoFence.zmin, #dzt
+                                        self.geoFence.xmax - self.geoFence.xmin, #dxo
+                                        self.geoFence.ymax - self.geoFence.ymin, #dyo
+                                        self.geoFence.zmax - self.geoFence.zmin, #dzo
+                                    ])
+
+        else:
+            obsUpperBound = np.array([self.geoFence.xmax - self.geoFence.xmin, #dxt
+                                        self.geoFence.ymax - self.geoFence.ymin, #dyt
+                                        self.geoFence.xmax - self.geoFence.xmin, #dxo
+                                        self.geoFence.ymax - self.geoFence.ymin, #dyo
+                                    ])
+
+
+        obsLowerBound = -obsUpperBound
+        return gym.spaces.Box(low=obsLowerBound, high=obsUpperBound, dtype=np.float32)
 
     def computeVelocityFromAction(self, action):
 

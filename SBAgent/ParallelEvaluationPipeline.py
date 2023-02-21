@@ -112,7 +112,7 @@ def evaluateOnCombination(process, comb):
         elif info['reason'] == "collision":
             nCollisions +=1
         else:
-            incompleteDistances.append(np.linalg.norm(obs[:(obs.shape[0]//2)]))
+            incompleteDistances.append(info['dist'])
         
         rewards.append(episodeReward)
         durations.append(episodeDuration)
@@ -151,12 +151,12 @@ def printResultsMarkdown(mus, sigmas, denoisers, results):
 
 if __name__ == "__main__":
     if args.method == "bivariate":
-        mus = np.arange(0, 0.21, 0.02)
-        sigmas = np.arange(0, 2.2, 0.2)
+        mus = np.arange(0, 0.1, 0.01)
+        sigmas = np.arange(0, 0.5, 0.05)
         denoisers = ['None']
     else:
         mus = [0.0, 0.05, 0.1]
-        sigmas = [0.0, 0.1, 0.5, 1.0]
+        sigmas = [0.0, 0.1, 0.25, 0.5]
         denoisers = ['None', 'LPF', 'KF']
 
     combinations = itertools.product(mus, sigmas, denoisers)

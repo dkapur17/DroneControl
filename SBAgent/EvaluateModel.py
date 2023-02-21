@@ -86,7 +86,7 @@ def evaluate(mu, sigma, denoiser, modelPath, trials, gui=False):
         elif info['reason'] == "collision":
             nCollisions +=1
         else:
-            incompleteDistances.append(np.linalg.norm(obs[:(obs.shape[0]//2)]))
+            incompleteDistances.append(info['dist'])
         
         rewards.append(episodeReward)
         durations.append(episodeDuration)
