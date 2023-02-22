@@ -6,12 +6,8 @@ Trained with with the improved reward function, `DISTANCE_PENALTY=4`, `MINOR_SAF
 
 ## [`model2`](./model2/)
 
-Same reward function. Trained with unbiased noise with standard deviation 1.0
+Same reward function. Trained with unbiased noise with standard deviation 0.1
 
 ## [`model3`](./model3/)
 
-Same reward function. Trained with unbiased noise with standard deviation 0.5
-
-## [`model4`](./model4/)
-
-Same reward function. Trained with unbiased noise with standard deviation 0.1
+Same reward function. Trained with unbiased noise with standard deviation 1.0

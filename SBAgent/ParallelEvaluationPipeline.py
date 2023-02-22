@@ -152,7 +152,7 @@ def printResultsMarkdown(mus, sigmas, denoisers, results):
 if __name__ == "__main__":
     if args.method == "bivariate":
         mus = np.arange(0, 0.21, 0.01)
-        sigmas = np.arange(2.1, 3.1, 0.1)
+        sigmas = np.arange(0, 3.1, 0.1)
         denoisers = ['None']
     else:
         mus = [0.0, 0.05, 0.1, 0.15, 0.2]
