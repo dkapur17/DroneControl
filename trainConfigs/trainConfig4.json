@@ -1,5 +1,5 @@
 {
-    "taskName": "train_0m_0s_none_0.01_vel_pen_forward_wall",
-    "envConfigFile": "specifics/0m_0s_none.json",
+    "taskName": "train_4_1_5_0.1std",
+    "envConfigFile": "specifics/0m_0.1s_none.json",
     "outputModelName": "base/model4"
 }

@@ -16,9 +16,9 @@ args = parser.parse_args()
 # Bivariate Parameters
 
 if args.method == "bivariate":
-    mus = np.arange(0, 0.21, 0.02)
-    sigmas = np.arange(0, 2.2, 0.2)
-    denoisers = ['LPF']
+    mus = np.arange(0, 0.21, 0.01)
+    sigmas = np.arange(0, 2.1, 0.1)
+    denoisers = ['None']
     print("# Bivariate Analysis")
 
 else:

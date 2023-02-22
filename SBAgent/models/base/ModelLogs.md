@@ -2,24 +2,16 @@
 
 ## [`model1`](./model1/)
 
-Trained with randomized obstacles, no noise and no denoiser.
-
-**Environment Config**: [0 Mean, 0 Std, No Denoiser](../../../configs/specifics/0m_0s_none.json)
+Trained with with the improved reward function, `DISTANCE_PENALTY=4`, `MINOR_SAFETY_PENALTY=1` and `MAJOR_SAFETY_PENALTY=5`. No noise during training.
 
 ## [`model2`](./model2/)
 
-Trained with randomized obstacles, unbiased noise with standard deviation 0.5 and no denoiser.
-
-**Environment Config**: [0 Mean, 0.5 Std, No Denoiser](../../../configs/specifics/0m_0.5s_none.json)
+Same reward function. Trained with unbiased noise with standard deviation 1.0
 
 ## [`model3`](./model3/)
 
-Trained with randomized obstacles, biased noise with mean 0.1 and no denoiser.
-
-**Environment Config**: [0.1 Mean, 0 Std, No Denoiser](../../../configs/specifics/0.1m_0s_none.json)
+Same reward function. Trained with unbiased noise with standard deviation 0.5
 
 ## [`model4`](./model4/)
 
-Trained with randomized obstacles, biased noise with mean 0.1 and standard deviation 0.5 and no denoiser.
-
-**Environment Config**: [0.1 Mean, 0.5 Std, No Denoiser](../../../configs/specifics/0.1m_0.5s_none.json)
+Same reward function. Trained with unbiased noise with standard deviation 0.1

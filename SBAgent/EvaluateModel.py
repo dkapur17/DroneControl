@@ -46,15 +46,17 @@ def evaluate(mu, sigma, denoiser, modelPath, trials, gui=False):
     envConfig['noiseParameters']['mu'] = mu
     envConfig['noiseParameters']['sigma'] = sigma
 
-    tempConfigFile = tempfile.NamedTemporaryFile()
+    # tempConfigFile = tempfile.NamedTemporaryFile()
 
-    with open(tempConfigFile.name, 'w') as f:
+    with open('tempConfigFile.json', 'w') as f:
         json.dump(envConfig, f)
 
     with NoStdStreams():
-        env = EnvBuilder.buildEnvFromConfig(tempConfigFile.name, gui=gui)
+        env = EnvBuilder.buildEnvFromConfig('tempConfigFile.json', gui=gui)
         print("Evaluating Model on")
         print(env)
+
+    os.remove('tempConfigFile.json')
 
     agent = PPO.load(modelPath)
 
