@@ -5,7 +5,7 @@
 #SBATCH --time=4-00:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --mem=32G
-#SBATCH -o ../jobOutputs/bivariate_model2_output.txt
-#SBATCH --job-name=bivariate_model2
+#SBATCH -o ../jobOutputs/model3_biased_output.txt
+#SBATCH --job-name=model3_biased
 
-python ParallelEvaluationPipeline.py models/base/model2/best_model.zip bivariate -t 1000 > model2_bivariate.md
+python ParallelEvaluationPipeline.py models/base/model3/best_model.zip -t 1000 > model3_biased.md

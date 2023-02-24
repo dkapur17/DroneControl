@@ -1,16 +1,5 @@
 import re
 import numpy as np
-from typing import Union
-from dataclasses import dataclass
-from collections import defaultdict
-
-@dataclass
-class EvalSummary:
-    successRate: float
-    failureRate: float
-    meanIncompletionDistance: Union[float, None]
-    meanReward: float
-    meanEpisodeDuration: float
 
 class AnalysisParser:
 
@@ -36,8 +25,8 @@ class AnalysisParser:
         return re.findall(r'^### (.*)\n', chunk)[0]
 
     def parseTitle(self, title):
-        mu = float(re.findall(r'\$\\mu = (.+?)\$', title)[0])
-        sigma = float(re.findall(r'\$\\sigma = (.+?)\$', title)[0])
+        mu = np.round(float(re.findall(r'\$\\mu = (.+?)\$', title)[0]), 3)
+        sigma = np.round(float(re.findall(r'\$\\sigma = (.+?)\$', title)[0]), 3)
         denoiser = re.findall(r'Denoiser = `(.+)`', title)[0]
         return mu, sigma, denoiser
 
@@ -47,8 +36,8 @@ class AnalysisParser:
 
     def parseTable(self, table):
         lines = table.split('\n')
-        # data = {}
-        values = []
+        data = {}
+
         for line in lines[2:-1]:
             cols = re.findall(r'\|.+\|', line)[0][1:-1].split('|')
             cols = [x.strip() for x in cols]
@@ -62,19 +51,23 @@ class AnalysisParser:
             else:
                 val = float(val)
             
-            values.append(val)
-
-        data = EvalSummary(*values)
+            data[metric] = val
         return data
 
     def parseChunks(self):
         
-        data = defaultdict(lambda: defaultdict(lambda: defaultdict(str)))
+        data = {}
         for chunk in self.chunks:
             title = self.extractTitle(chunk)
             mu, sigma, denoiser = self.parseTitle(title)
             table = self.extractTable(chunk)
             tableData = self.parseTable(table)
+            if mu not in data:
+                data[mu] = {}
+            if sigma not in data[mu]:
+                data[mu][sigma] = {}
+            if denoiser not in data[mu][sigma]:
+                data[mu][sigma][denoiser] = {}
             data[mu][sigma][denoiser] = tableData
         
         return data

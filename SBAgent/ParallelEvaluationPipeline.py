@@ -17,7 +17,6 @@ from time import sleep
 
 parser = argparse.ArgumentParser()
 parser.add_argument("modelPath", help="Path to the Model", type=str)
-parser.add_argument("method", choices={'bivariate', 'multivariate'}, help='Whether to perform bivariate or multivariate analysis', type=str)
 parser.add_argument("-t", "--trials", type=int, default=1000, help="Number of episodes to evaluate the model for in each environment.")
 args = parser.parse_args()
 
@@ -135,8 +134,9 @@ def evaluateOnCombination(process, comb):
 
 def printResultsMarkdown(mus, sigmas, denoisers, results):
 
-    print(f"# {args.method.title()} Analysis")
+    print("# Evaluation Results")
     print(f"**Model**: `{args.modelPath}`")
+    print(f"mus = {mus}, sigmas = {sigmas}, denoisers = {denoisers}")
     i = 0
     for mu in mus:
         for sigma in sigmas:
@@ -150,18 +150,14 @@ def printResultsMarkdown(mus, sigmas, denoisers, results):
 
 
 if __name__ == "__main__":
-    if args.method == "bivariate":
-        mus = np.arange(0, 0.21, 0.01)
-        sigmas = np.arange(0, 3.1, 0.1)
-        denoisers = ['None']
-    else:
-        mus = [0.0, 0.05, 0.1, 0.15, 0.2]
-        sigmas = [0.0, 0.5, 1.0, 1.5, 2.0]
-        denoisers = ['None', 'LPF', 'KF']
+
+    mus = np.arange(0, 0.31, 0.01)
+    sigmas = [0]
+    denoisers = ['None', 'LPF', 'KF']
 
     combinations = itertools.product(mus, sigmas, denoisers)
 
-    print(f"{args.method.title()} Evaluation on Model {args.modelPath}", file=sys.stderr)
+    print(f"Evaluation on Model {args.modelPath}", file=sys.stderr)
     print(file=sys.stderr)
     print(f"Total Processes: {len(mus)*len(sigmas)*len(denoisers)}", file=sys.stderr)
     
