@@ -1,0 +1,31 @@
+{
+    "xmin": 0,
+    "xmax": 2,
+    "ymin": -0.5,
+    "ymax": 0.5,
+    "zmin": 0,
+    "zmax": 1,
+    "provideFixedObstacles": true,
+    "obstacles": [[1, 0, 0.5]],
+    "minObstacles": 0,
+    "maxObstacles": 4,
+    "randomizeObstaclesEveryEpisode": false,
+    "fixedAltitude": true,
+    "episodeLength": 1000,
+    "showDebugLines": true,
+    "randomizeDronePosition": false,
+    "simFreq": 240,
+    "controlFreq": 48,
+    "noiseParameters": {
+        "mu": 0,
+        "sigma": 0,
+        "denoiseEngine": {
+            "method": "lpf",
+            "parameters": {
+                "order": 2,
+                "criticalFreq": 2,
+                "ftype": "bessel"
+            }
+        }
+    }
+}

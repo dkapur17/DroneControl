@@ -5,6 +5,7 @@ from tabulate import tabulate
 
 from .DenoiseEngines import LPFDenoiseEngine, KFDenoiseEngine
 from ..ObstacleAviary import ObstacleAviary
+from ..MocapAviary import MocapAviary
 
 class GaussianNoiseGenerator:
 
@@ -21,7 +22,7 @@ class GaussianNoiseGenerator:
 
 class NoiseWrapper(gym.Wrapper):
 
-    def __init__(self, env:ObstacleAviary, mu:float, sigma:float, denoiseEngine:Union[None, LPFDenoiseEngine, KFDenoiseEngine]=None) -> None:
+    def __init__(self, env:Union[ObstacleAviary,MocapAviary], mu:float, sigma:float, denoiseEngine:Union[None, LPFDenoiseEngine, KFDenoiseEngine]=None) -> None:
 
         super().__init__(env)
         self.denoiseEngine = denoiseEngine
@@ -39,6 +40,8 @@ class NoiseWrapper(gym.Wrapper):
             vel = self.computeVelocityFromAction(action)
             pos_dim = 2 if self.env.fixedAltitude else 3
             obs[:pos_dim] = self.denoiseEngine(obs[:pos_dim].copy(), vel)
+
+        self.noisyTrajectory.append(np.array([obs[0], obs[1], self.altitude]) if self.fixedAltitude else obs[:3])
 
         # Compute processed observation from raw observation
         obs = self.env._computeProcessedObservation(obs)

@@ -71,6 +71,7 @@ class ObstacleAviary(BaseSingleAgentAviary):
         self.showDebugLines = gui and showDebugLines
 
         self.trajectory = []
+        self.noisyTrajectory = []
 
         self.obstacles = []
         self.totalTimesteps = 0
@@ -207,6 +208,7 @@ class ObstacleAviary(BaseSingleAgentAviary):
     def reset(self):
         self.episodeStepCount = 0
         self.trajectory = []
+        self.noisyTrajectory = []
         self.obstacles = []
         self.offsetLine = None
         self.targetLine = None
@@ -397,7 +399,10 @@ class ObstacleAviary(BaseSingleAgentAviary):
     def _drawTrajectory(self):
 
         if len(self.trajectory) > 3:
-            p.addUserDebugLine(self.trajectory[-2], self.trajectory[-1])
+            p.addUserDebugLine(self.trajectory[-2], self.trajectory[-1], lineColorRGB=[1, 0, 0], lineWidth=2)
+        
+        if len(self.noisyTrajectory):
+            p.addUserDebugPoints([self.noisyTrajectory[-1]], [[0, 1, 0]], pointSize=2, physicsClientId=self.CLIENT)
 
     def _generateObstaclePositions(self):
         self.obstaclePositions = []

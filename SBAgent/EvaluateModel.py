@@ -30,14 +30,14 @@ class NoStdStreams(object):
         self.devnull.close()
 
 
-def evaluate(mu, sigma, denoiser, modelPath, trials, gui=False):
+def evaluate(mu, sigma, denoiser, modelPath, trials, gui=False, fixed=False):
 
     seeds = np.load('evalSeeds.npy').tolist()
 
     envFile = {
-        'none': '../configs/NoDenoiserEnv.json',
-        'lpf': '../configs/LPFDenoiserEnv.json',
-        'kf': '../configs/KFDenoiserEnv.json'
+        'none': f'../configs/NoDenoiserEnv{"Fixed" if fixed else ""}.json',
+        'lpf': f'../configs/LPFDenoiserEnv{"Fixed" if fixed else ""}.json',
+        'kf': f'../configs/KFDenoiserEnv{"Fixed" if fixed else ""}.json'
     }[denoiser]
 
     with open(envFile, 'r') as f:
@@ -45,8 +45,6 @@ def evaluate(mu, sigma, denoiser, modelPath, trials, gui=False):
 
     envConfig['noiseParameters']['mu'] = mu
     envConfig['noiseParameters']['sigma'] = sigma
-
-    # tempConfigFile = tempfile.NamedTemporaryFile()
 
     with open('tempConfigFile.json', 'w') as f:
         json.dump(envConfig, f)
@@ -121,6 +119,9 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--trials", type=int, default=10, help="Number of episodes to evaluate for.")
     parser.add_argument('--gui', action='store_true', help='Enable GUI')
     parser.add_argument('--no-gui', action='store_false', dest='gui', help='Disable GUI')
+    parser.add_argument('--fixed', action='store_true', help='Use Fixed Obstacles')
+    parser.add_argument('--random', action='store_false', dest='fixed', help='Use Randomized Obstacles')
+
     args = parser.parse_args()
 
     evaluationTable = evaluate(**vars(args))
