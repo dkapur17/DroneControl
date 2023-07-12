@@ -1,6 +1,6 @@
 # DroneControl
 
-Code base for simulation and practical experimentation for autonomous drone obstacle avoidance with noise injection.
+Code for the paper [Sim-to-Real Deep Reinforcement Learning based Obstacle Avoidance for UAVs under Measurement Uncertainty](https://arxiv.org/abs/2303.07243), for simulation and practical experimentation for autonomous drone obstacle avoidance with noise injection.
 
 ## Component Interactions
 
